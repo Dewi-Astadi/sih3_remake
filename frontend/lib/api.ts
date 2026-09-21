@@ -703,7 +703,13 @@ export async function getDokumenList(
       );
     }
     if (params?.kategori && params.kategori !== "semua") {
-      filtered = filtered.filter((d) => d.kategori.toLowerCase() === params.kategori?.toLowerCase());
+      if (params.kategori === "buletin_laporan") {
+        filtered = filtered.filter(
+          (d) => d.kategori.toLowerCase() === "buletin" || d.kategori.toLowerCase() === "laporan"
+        );
+      } else {
+        filtered = filtered.filter((d) => d.kategori.toLowerCase() === params.kategori?.toLowerCase());
+      }
     }
     if (params?.tahun) {
       filtered = filtered.filter((d) => d.tahun === Number(params.tahun));

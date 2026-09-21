@@ -534,13 +534,13 @@ git commit -m "feat(frontend): implement station detail view with measurement tr
 - Create: `frontend/components/modules/PdfViewerDialog.tsx`
 - Create: `frontend/app/publikasi/page.tsx`
 
-- [ ] **Langkah 1: Buat `PdfViewerDialog.tsx`**
+- [x] **Langkah 1: Buat `PdfViewerDialog.tsx`**
 Modal dialog Shadcn UI untuk pratinjau dokumen PDF resmi tanpa perlu meninggalkan halaman portal.
 
-- [ ] **Langkah 2: Buat `app/publikasi/page.tsx`**
+- [x] **Langkah 2: Buat `app/publikasi/page.tsx`**
 Katalog kartu/tabel dokumen peraturan perundangan, SOP, dan buletin dengan filter pencarian instan dan tombol aksi *Pratinjau* serta *Download PDF*.
 
-- [ ] **Langkah 3: Commit publikasi dokumen**
+- [x] **Langkah 3: Commit publikasi dokumen**
 ```bash
 git add frontend/components/modules/PdfViewerDialog.tsx frontend/app/publikasi/
 git commit -m "feat(frontend): create publication documents repository with in-browser PDF preview modal"
