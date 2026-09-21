@@ -216,7 +216,7 @@ git commit -m "feat(frontend): add Shadcn UI components and design utilities"
 - Create: `backend/app/Models/Pengukuran.php`
 - Create: `backend/app/Models/Dokumen.php`
 
-- [ ] **Langkah 1: Unduh composer.phar dan inisialisasi Laravel 11**
+- [x] **Langkah 1: Unduh composer.phar dan inisialisasi Laravel 11**
 Jalankan di root repositori:
 ```powershell
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -225,25 +225,25 @@ php -r "unlink('composer-setup.php');"
 php composer.phar create-project laravel/laravel backend
 ```
 
-- [ ] **Langkah 2: Tulis berkas migrasi database terstruktur**
+- [x] **Langkah 2: Tulis berkas migrasi database terstruktur**
 Tulis 4 migrasi untuk tabel:
 1. `walidata` (nama, singkatan, logo_path, website_url, layanan_url, kontak_wa, kontak_telp)
 2. `pos` (kode_pos, nama, tipe, jenis, wilayah_sungai, das, sub_das, sungai, desa, kecamatan, kabupaten, provinsi, lat, lng, walidata_id, status_alat)
 3. `pengukuran` (pos_id, recorded_at, nilai, satuan, status_siaga, parameter_tambahan) dengan composite index `[pos_id, recorded_at]`.
 4. `dokumen` (judul, kategori, tahun, nomor_dokumen, file_path, file_size, file_extension, download_count).
 
-- [ ] **Langkah 3: Tulis Eloquent Models lengkap dengan relasi**
+- [x] **Langkah 3: Tulis Eloquent Models lengkap dengan relasi**
 Definisikan:
 - `Walidata` hasMany `Pos`
 - `Pos` belongsTo `Walidata`, hasMany `Pengukuran`
 - `Pengukuran` belongsTo `Pos`
 - `Dokumen`
 
-- [ ] **Langkah 4: Jalankan migrasi database**
+- [x] **Langkah 4: Jalankan migrasi database**
 Run: `cd backend; php artisan migrate --force`
 Expected: `Migration table created successfully.`
 
-- [ ] **Langkah 5: Commit migrasi dan model backend**
+- [x] **Langkah 5: Commit migrasi dan model backend**
 ```bash
 git add backend/
 git commit -m "feat(backend): initialize Laravel 11 with core domain migrations and models"
