@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Pos extends Model
 {
@@ -55,5 +56,13 @@ class Pos extends Model
     public function pengukuran(): HasMany
     {
         return $this->hasMany(Pengukuran::class, 'pos_id');
+    }
+
+    /**
+     * Get the latest measurement record for this pos.
+     */
+    public function latestPengukuran(): HasOne
+    {
+        return $this->hasOne(Pengukuran::class, 'pos_id')->latestOfMany('recorded_at');
     }
 }

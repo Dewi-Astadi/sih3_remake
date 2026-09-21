@@ -284,7 +284,7 @@ git commit -m "feat(backend): add rich SIH3 Serayu Opak sample data seeders"
 - Modify: `backend/routes/api.php`
 - Create: `backend/tests/Feature/PosApiTest.php`
 
-- [ ] **Langkah 1: Tulis automated test untuk endpoint API**
+- [x] **Langkah 1: Tulis automated test untuk endpoint API**
 `backend/tests/Feature/PosApiTest.php`:
 ```php
 <?php
@@ -304,14 +304,14 @@ class PosApiTest extends TestCase {
 }
 ```
 
-- [ ] **Langkah 2: Jalankan test untuk memverifikasi kegagalan (TDD)**
+- [x] **Langkah 2: Jalankan test untuk memverifikasi kegagalan (TDD)**
 Run: `cd backend; php artisan test --filter=PosApiTest`
 Expected: FAIL (404 Not Found)
 
-- [ ] **Langkah 3: Implementasikan `TelemetryController` dan `PosController`**
+- [x] **Langkah 3: Implementasikan `TelemetryController` dan `PosController`**
 Tambahkan fitur filter pencarian fleksibel berdasarkan nama pos, tipe, jenis, DAS, dan walidata.
 
-- [ ] **Langkah 4: Daftarkan rute di `routes/api.php`**
+- [x] **Langkah 4: Daftarkan rute di `routes/api.php`**
 ```php
 Route::prefix('v1')->group(function () {
     Route::get('/telemetry/summary', [TelemetryController::class, 'summary']);
@@ -321,11 +321,11 @@ Route::prefix('v1')->group(function () {
 });
 ```
 
-- [ ] **Langkah 5: Jalankan test kembali**
+- [x] **Langkah 5: Jalankan test kembali**
 Run: `php artisan test --filter=PosApiTest`
 Expected: PASS (Semua tes hijau)
 
-- [ ] **Langkah 6: Commit controller API pos**
+- [x] **Langkah 6: Commit controller API pos**
 ```bash
 git add backend/app/Http/Controllers/Api/ backend/routes/api.php backend/tests/
 git commit -m "feat(backend): implement telemetry and pos REST API endpoints"
