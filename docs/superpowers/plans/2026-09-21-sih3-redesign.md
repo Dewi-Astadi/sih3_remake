@@ -453,23 +453,23 @@ git commit -m "feat(frontend): build modern PUPR navbar and footer layouts"
 - Create: `frontend/components/modules/TelemetryStrip.tsx`
 - Modify: `frontend/app/page.tsx`
 
-- [ ] **Langkah 1: Buat `QuickSearchHero.tsx`**
+- [x] **Langkah 1: Buat `QuickSearchHero.tsx`**
 Headline bersih, tipografi tajam, dan input pencarian universal di tengah yang langsung mengarahkan user ke `/data-explorer?q=...`.
 
-- [ ] **Langkah 2: Buat `TelemetryStrip.tsx` (Pengganti Peta)**
+- [x] **Langkah 2: Buat `TelemetryStrip.tsx` (Pengganti Peta)**
 Kartu-kartu telemetri stasiun aktif (TMA Duga Air & Curah Hujan):
 - Angka nilai besar & tegas (misal: `2.54 m`).
 - Badge status visual (*Normal*, *Waspada*, *Siaga*).
 - Timestamp pembaruan data terakhir.
 
-- [ ] **Langkah 3: Tambahkan kartu 3 Pilar Kategori Data di `app/page.tsx`**
+- [x] **Langkah 3: Tambahkan kartu 3 Pilar Kategori Data di `app/page.tsx`**
 Kartu akses cepat ke *Hidrologi*, *Hidrometeorologi*, dan *Hidrogeologi*.
 
-- [ ] **Langkah 4: Uji tampilan di browser / terminal build**
+- [x] **Langkah 4: Uji tampilan di browser / terminal build**
 Run: `cd frontend; npm run build`
 Expected: `Route (app) / size: ... Compiled successfully`
 
-- [ ] **Langkah 5: Commit halaman beranda**
+- [x] **Langkah 5: Commit halaman beranda**
 ```bash
 git add frontend/components/modules/ frontend/app/page.tsx
 git commit -m "feat(frontend): implement homepage with quick search hero and live telemetry strip"
