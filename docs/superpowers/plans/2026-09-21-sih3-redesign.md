@@ -513,15 +513,15 @@ git commit -m "feat(frontend): build unified open data explorer with 1-click and
 - Create: `frontend/components/modules/StationTrendChart.tsx`
 - Create: `frontend/app/pos/[id]/page.tsx`
 
-- [ ] **Langkah 1: Buat `StationTrendChart.tsx` dengan Recharts**
+- [x] **Langkah 1: Buat `StationTrendChart.tsx` dengan Recharts**
 Grafik garis tren TMA / grafik batang curah hujan bergaya monokrom/navy yang responsif dan interaktif dengan tooltip.
 
-- [ ] **Langkah 2: Buat `app/pos/[id]/page.tsx`**
+- [x] **Langkah 2: Buat `app/pos/[id]/page.tsx`**
 - Kartu ringkasan metadata stasiun (wilayah administratif, koordinat, walidata pemilik).
 - Date range picker untuk memilih periode pengukuran.
 - Tabel cuplikan data historis dan tombol ekspor lengkap periode tersebut.
 
-- [ ] **Langkah 3: Commit detail pos**
+- [x] **Langkah 3: Commit detail pos**
 ```bash
 git add frontend/components/modules/StationTrendChart.tsx frontend/app/pos/
 git commit -m "feat(frontend): implement station detail view with measurement trend chart and historical export"

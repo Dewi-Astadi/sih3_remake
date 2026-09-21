@@ -596,21 +596,71 @@ export async function getPosTimeseries(
   } catch (err) {
     console.warn(`[SIH3 API] Gagal memuat timeseries pos #${id}, membuat mock realistis.`, err);
     
-    // Generate timeseries realistis 24 titik terakhir jika backend belum hidup
+    // Generate timeseries realistis berdasarkan stasiun dan rentang tanggal
+    const matchedPos = FALLBACK_POS.find((p) => p.id === Number(id)) || FALLBACK_POS[0];
     const mockData: Pengukuran[] = [];
     const now = Date.now();
-    for (let i = 24; i >= 0; i--) {
-      const time = new Date(now - i * 3600 * 1000).toISOString();
-      const baseVal = 2.1;
-      const variation = Math.sin(i / 3) * 0.45 + (Math.random() * 0.15 - 0.07);
-      const val = Math.max(0.1, Number((baseVal + variation).toFixed(2)));
+
+    // Tentukan jumlah titik dan interval waktu berdasarkan rentang start_date
+    let totalPoints = 28; // Default ~7 hari (tiap 6 jam)
+    let intervalHours = 6;
+    if (params?.start_date) {
+      const diffMs = Math.max(1000 * 3600 * 24, now - new Date(params.start_date).getTime());
+      const diffDays = Math.ceil(diffMs / (1000 * 3600 * 24));
+      if (diffDays <= 7) {
+        totalPoints = 28;
+        intervalHours = 6;
+      } else if (diffDays <= 30) {
+        totalPoints = 30;
+        intervalHours = 24;
+      } else {
+        totalPoints = 90;
+        intervalHours = 24;
+      }
+    }
+
+    const jenis = matchedPos?.jenis || "AWLR";
+    let satuan = "m";
+    if (jenis === "ARR") satuan = "mm";
+    else if (jenis === "Kualitas Air") satuan = "pH";
+    else if (jenis === "Klimatologi") satuan = "°C";
+
+    for (let i = totalPoints; i >= 0; i--) {
+      const time = new Date(now - i * intervalHours * 3600 * 1000).toISOString();
+      let val = 0;
+      let status: "normal" | "waspada" | "siaga" = "normal";
+
+      if (jenis === "ARR") {
+        // Curah hujan (mm): variasi ada hari kering (0 mm) dan hujan sporadis
+        const isRainy = i % 4 === 1 || i % 7 === 2 || i === 3;
+        val = isRainy ? Number((Math.sin(i * 1.7) * 25 + 28).toFixed(1)) : 0;
+        if (val > 40) status = "siaga";
+        else if (val > 20) status = "waspada";
+      } else if (jenis === "MAT") {
+        // Muka Air Tanah (m di bawah muka tanah)
+        const base = 8.2;
+        val = Number((base + Math.sin(i / 5) * 0.6).toFixed(2));
+        status = "normal";
+      } else if (jenis === "Kualitas Air") {
+        // Kualitas air (pH)
+        val = Number((7.2 + Math.sin(i / 4) * 0.35).toFixed(2));
+        status = "normal";
+      } else {
+        // Default AWLR (Tinggi Muka Air Sungai)
+        const base = 2.15;
+        const variation = Math.sin(i / 3.5) * 0.65 + (Math.cos(i / 2) * 0.2);
+        val = Math.max(0.4, Number((base + variation).toFixed(2)));
+        if (val > 3.1) status = "siaga";
+        else if (val > 2.6) status = "waspada";
+      }
+
       mockData.push({
         id: 1000 + i,
         pos_id: Number(id),
         recorded_at: time,
         nilai: val,
-        satuan: "m",
-        status_siaga: val > 2.8 ? "waspada" : "normal",
+        satuan,
+        status_siaga: status,
       });
     }
 
@@ -618,10 +668,10 @@ export async function getPosTimeseries(
       success: true,
       pos: {
         id: Number(id),
-        kode_pos: "AWLR-DEMO-01",
-        nama: "Pos AWLR Demo",
-        jenis: "AWLR",
-        tipe: "hidrologi",
+        kode_pos: matchedPos?.kode_pos || "AWLR-DEMO-01",
+        nama: matchedPos?.nama || "Pos Pemantauan Demo",
+        jenis: matchedPos?.jenis || "AWLR",
+        tipe: matchedPos?.tipe || "hidrologi",
       },
       count: mockData.length,
       data: mockData,
