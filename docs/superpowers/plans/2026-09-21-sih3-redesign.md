@@ -339,19 +339,19 @@ git commit -m "feat(backend): implement telemetry and pos REST API endpoints"
 - Modify: `backend/routes/api.php`
 - Create: `backend/tests/Feature/ExportTest.php`
 
-- [ ] **Langkah 1: Tulis automated test untuk pengunduhan berkas**
+- [x] **Langkah 1: Tulis automated test untuk pengunduhan berkas**
 Uji respons header `Content-Disposition: attachment; filename=...` dan stream data format CSV dan XLSX.
 
-- [ ] **Langkah 2: Implementasikan `ExportController` dengan memory-efficient stream**
+- [x] **Langkah 2: Implementasikan `ExportController` dengan memory-efficient stream**
 Mendukung:
 - Single pos export: `/api/v1/pos/{id}/export?format=xlsx|csv&start_date=...&end_date=...`
 - Batch export: `/api/v1/pos/batch-export` (mengemas multiple data pos ke dalam satu file ZIP atau multi-sheet workbook).
 
-- [ ] **Langkah 3: Jalankan automated test ekspor**
+- [x] **Langkah 3: Jalankan automated test ekspor**
 Run: `cd backend; php artisan test --filter=ExportTest`
 Expected: PASS
 
-- [ ] **Langkah 4: Commit modul ekspor**
+- [x] **Langkah 4: Commit modul ekspor**
 ```bash
 git add backend/app/Http/Controllers/Api/ExportController.php backend/routes/api.php backend/tests/
 git commit -m "feat(backend): implement high-performance streamed data exporter for CSV and XLSX"
