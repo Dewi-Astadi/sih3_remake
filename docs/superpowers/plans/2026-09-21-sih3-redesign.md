@@ -424,22 +424,22 @@ git commit -m "feat(backend): set up Filament v3 admin CMS for pos, documents, a
 - Create: `frontend/components/layout/Footer.tsx`
 - Modify: `frontend/app/layout.tsx`
 
-- [ ] **Langkah 1: Buat type definitions di `frontend/lib/types.ts`**
+- [x] **Langkah 1: Buat type definitions di `frontend/lib/types.ts`**
 Definisikan tipe TypeScript untuk `Pos`, `TelemetrySummary`, `Pengukuran`, `Dokumen`, `Walidata`.
 
-- [ ] **Langkah 2: Buat klien API di `frontend/lib/api.ts`**
+- [x] **Langkah 2: Buat klien API di `frontend/lib/api.ts`**
 Klien Axios terpusat dengan fallback data dan penanganan timeout/error.
 
-- [ ] **Langkah 3: Buat `Navbar.tsx`**
+- [x] **Langkah 3: Buat `Navbar.tsx`**
 Header fixed dengan logo SIH3 + Kementerian PUPR, navigasi (*Beranda, Data Explorer, Dokumen, Walidata*), tombol CTA Amber *"Unduh Data"*, dan indikator status API.
 
-- [ ] **Langkah 4: Buat `Footer.tsx`**
+- [x] **Langkah 4: Buat `Footer.tsx`**
 Footer modern, clean dengan alamat balai (Jl. Solo Km. 6, Caturtunggal, Sleman, DIY), informasi kontak, hak cipta resmi, dan disclaimer keterbukaan informasi publik.
 
-- [ ] **Langkah 5: Pasang di `app/layout.tsx`**
+- [x] **Langkah 5: Pasang di `app/layout.tsx`**
 Pastikan Navbar dan Footer membungkus seluruh halaman anak (*children*).
 
-- [ ] **Langkah 6: Commit tata letak global**
+- [x] **Langkah 6: Commit tata letak global**
 ```bash
 git add frontend/lib/ frontend/components/layout/ frontend/app/layout.tsx
 git commit -m "feat(frontend): build modern PUPR navbar and footer layouts"
