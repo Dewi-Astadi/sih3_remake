@@ -16,17 +16,17 @@ class ModelRelationTest extends TestCase
     public function test_models_and_relationships(): void
     {
         $walidata = Walidata::create([
-            'nama' => 'Balai Besar Wilayah Sungai Serayu Opak',
-            'singkatan' => 'BBWS SO',
+            'nama' => 'Balai Besar Wilayah Sungai Serayu Opak Test',
+            'singkatan' => 'BBWS-TEST',
             'deskripsi' => 'Instansi teknis pengelola SDA Serayu Opak',
             'website_url' => 'https://sda.pu.go.id/balai/bbwsserayuopak',
             'kontak_wa' => '6281122334455',
         ]);
 
-        $this->assertDatabaseHas('walidata', ['singkatan' => 'BBWS SO']);
+        $this->assertDatabaseHas('walidata', ['singkatan' => 'BBWS-TEST']);
 
         $pos = $walidata->pos()->create([
-            'kode_pos' => 'AWLR-KRANGGAN',
+            'kode_pos' => 'AWLR-KRANGGAN-TEST',
             'nama' => 'Pos Duga Air Kranggan',
             'tipe' => 'hidrologi',
             'jenis' => 'AWLR',
@@ -43,7 +43,7 @@ class ModelRelationTest extends TestCase
             'status_alat' => 'aktif',
         ]);
 
-        $this->assertDatabaseHas('pos', ['kode_pos' => 'AWLR-KRANGGAN']);
+        $this->assertDatabaseHas('pos', ['kode_pos' => 'AWLR-KRANGGAN-TEST']);
         $this->assertEquals($walidata->id, $pos->walidata->id);
         $this->assertCount(1, $walidata->fresh()->pos);
 

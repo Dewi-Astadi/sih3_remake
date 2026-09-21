@@ -256,18 +256,18 @@ git commit -m "feat(backend): initialize Laravel 11 with core domain migrations 
 - Create: `backend/database/seeders/DatabaseSeeder.php`
 - Test: `php artisan db:seed`
 
-- [ ] **Langkah 1: Tulis seeder komprehensif berdasarkan data aktual portal SIH3**
+- [x] **Langkah 1: Tulis seeder komprehensif berdasarkan data aktual portal SIH3**
 Isi data awal:
 - **Walidata:** BBWS Serayu Opak, BMKG Staklim DIY & Jateng, Dinas PUP ESDM DIY, Dinas Pusdataru Jawa Tengah, DLHK DIY, DLHK Jateng, Perum Jasa Tirta I.
 - **Stasiun Pos:** Pos AWLR Kranggan (Progo), Pos Ngrancah Sermo, Pos Kualitas Air Saluran Buang PDAM, Pos Mata Air Jumprit, Pos ARR Hujan.
 - **Pengukuran:** 100+ sampel data timeseries 30 hari terakhir per pos (TMA dalam meter dan Curah Hujan dalam mm).
 - **Dokumen:** PP RI No 30 Tahun 2024, UU No 17 Tahun 2019, SOP Analisis Mutu Air, SOP Perhitungan Debit Banjir, Buletin Hidrologi.
 
-- [ ] **Langkah 2: Eksekusi seeder**
+- [x] **Langkah 2: Eksekusi seeder**
 Run: `cd backend; php artisan db:seed`
 Expected: `Database seeding completed successfully.`
 
-- [ ] **Langkah 3: Commit seeder data**
+- [x] **Langkah 3: Commit seeder data**
 ```bash
 git add backend/database/seeders/
 git commit -m "feat(backend): add rich SIH3 Serayu Opak sample data seeders"
