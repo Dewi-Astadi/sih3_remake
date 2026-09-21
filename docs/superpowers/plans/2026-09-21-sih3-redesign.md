@@ -84,20 +84,20 @@ sih3_remake/
 - Create: `frontend/app/layout.tsx`
 - Create: `frontend/app/page.tsx`
 
-- [ ] **Langkah 1: Inisialisasi proyek Next.js dengan TypeScript & Tailwind CSS**
+- [x] **Langkah 1: Inisialisasi proyek Next.js dengan TypeScript & Tailwind CSS**
 Jalankan di root repositori:
 ```bash
 npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*" --use-npm --yes
 ```
 Verifikasi direktori `frontend` terbentuk dan dependensi terpasang.
 
-- [ ] **Langkah 2: Pasang pustaka UI pendukung**
+- [x] **Langkah 2: Pasang pustaka UI pendukung**
 Jalankan di `frontend`:
 ```bash
 cd frontend; npm install clsx tailwind-merge lucide-react @tanstack/react-table recharts axios sonner
 ```
 
-- [ ] **Langkah 3: Konfigurasi Design Tokens PUPR pada `tailwind.config.ts`**
+- [x] **Langkah 3: Konfigurasi Design Tokens PUPR pada `tailwind.config.ts`**
 Sesuaikan warna Deep Navy (`#0f172a` / `#1e3a8a`), Warm Amber (`#f59e0b`), dan Slate neutral:
 Edit `frontend/tailwind.config.ts`:
 ```typescript
@@ -151,11 +151,11 @@ const config: Config = {
 export default config;
 ```
 
-- [ ] **Langkah 4: Jalankan dev server Next.js untuk memverifikasi**
+- [x] **Langkah 4: Jalankan dev server Next.js untuk memverifikasi**
 Run: `npm run build` di `frontend`
 Expected: `Compiled successfully`
 
-- [ ] **Langkah 5: Commit fondasi frontend**
+- [x] **Langkah 5: Commit fondasi frontend**
 ```bash
 git add frontend/
 git commit -m "feat(frontend): initialize Next.js with Tailwind and PUPR brand tokens"
@@ -175,7 +175,7 @@ git commit -m "feat(frontend): initialize Next.js with Tailwind and PUPR brand t
 - Create: `frontend/components/ui/dropdown-menu.tsx`
 - Create: `frontend/components/ui/skeleton.tsx`
 
-- [ ] **Langkah 1: Buat helper utility `frontend/lib/utils.ts`**
+- [x] **Langkah 1: Buat helper utility `frontend/lib/utils.ts`**
 ```typescript
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -190,13 +190,13 @@ export function formatNumber(val: number | null | undefined): string {
 }
 ```
 
-- [ ] **Langkah 2: Buat komponen `button.tsx`, `card.tsx`, dan `badge.tsx`**
+- [x] **Langkah 2: Buat komponen `button.tsx`, `card.tsx`, dan `badge.tsx`**
 Implementasikan komponen UI sesuai standar Shadcn UI dengan varian warna Amber dan Navy.
 
-- [ ] **Langkah 3: Buat komponen `table.tsx`, `input.tsx`, dan `skeleton.tsx`**
+- [x] **Langkah 3: Buat komponen `table.tsx`, `input.tsx`, dan `skeleton.tsx`**
 Implementasikan komponen tabel responsif dan kolom input filter dengan styling clean border 1px.
 
-- [ ] **Langkah 4: Commit komponen Shadcn UI**
+- [x] **Langkah 4: Commit komponen Shadcn UI**
 ```bash
 git add frontend/lib/ frontend/components/ui/
 git commit -m "feat(frontend): add Shadcn UI components and design utilities"
