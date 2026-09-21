@@ -388,14 +388,14 @@ git commit -m "feat(backend): implement publication documents and walidata API e
 - Create: `backend/app/Filament/Resources/DokumenResource.php`
 - Create: `backend/app/Filament/Resources/WalidataResource.php`
 
-- [ ] **Langkah 1: Pasang Filament v3**
+- [x] **Langkah 1: Pasang Filament v3**
 Jalankan di `backend`:
 ```powershell
 php composer.phar require filament/filament:"^3.2" -W
 php artisan filament:install --panels
 ```
 
-- [ ] **Langkah 2: Buat resource panel admin untuk Pos, Dokumen, dan Walidata**
+- [x] **Langkah 2: Buat resource panel admin untuk Pos, Dokumen, dan Walidata**
 Run:
 ```powershell
 php artisan make:filament-resource Pos --generate
@@ -403,10 +403,10 @@ php artisan make:filament-resource Dokumen --generate
 php artisan make:filament-resource Walidata --generate
 ```
 
-- [ ] **Langkah 3: Tambahkan aksi upload CSV/Excel batch data pengukuran pada `PosResource`**
+- [x] **Langkah 3: Tambahkan aksi upload CSV/Excel batch data pengukuran pada `PosResource`**
 Staf admin dapat mengunggah lembar kerja data rekaman tanpa perlu input satu per satu.
 
-- [ ] **Langkah 4: Commit konfigurasi Filament**
+- [x] **Langkah 4: Commit konfigurasi Filament**
 ```bash
 git add backend/
 git commit -m "feat(backend): set up Filament v3 admin CMS for pos, documents, and data imports"
