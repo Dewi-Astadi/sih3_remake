@@ -569,21 +569,21 @@ git commit -m "feat(frontend): create clean walidata stakeholder directory page"
 **Files:**
 - Create: `backend/tests/Feature/EndToEndIntegrationTest.php`
 
-- [ ] **Langkah 1: Jalankan seluruh suite test backend**
+- [x] **Langkah 1: Jalankan seluruh suite test backend**
 Run: `cd backend; php artisan test`
 Expected: Seluruh automated tests PASS tanpa error.
 
-- [ ] **Langkah 2: Uji coba streaming download file Excel & CSV**
+- [x] **Langkah 2: Uji coba streaming download file Excel & CSV**
 Verifikasi berkas yang diunduh dapat dibuka dengan format kolom rapi dan tidak korup.
 
-- [ ] **Langkah 3: Build frontend production Next.js**
+- [x] **Langkah 3: Build frontend production Next.js**
 Run: `cd frontend; npm run build`
 Expected: `Compiled successfully` tanpa warning atau type error.
 
-- [ ] **Langkah 4: Uji tampilan responsif (Mobile & Desktop)**
+- [x] **Langkah 4: Uji tampilan responsif (Mobile & Desktop)**
 Pastikan layout, tabel data explorer, dan bilah unduh batch tampil nyaman di layar smartphone.
 
-- [ ] **Langkah 5: Commit akhir dan dokumentasi runbook**
+- [x] **Langkah 5: Commit akhir dan dokumentasi runbook**
 ```bash
 git add .
 git commit -m "chore: complete end-to-end integration and verification of SIH3 redesign"
