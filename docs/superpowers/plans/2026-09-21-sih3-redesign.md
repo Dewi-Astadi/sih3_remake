@@ -365,15 +365,15 @@ git commit -m "feat(backend): implement high-performance streamed data exporter 
 - Create: `backend/app/Http/Controllers/Api/WalidataController.php`
 - Modify: `backend/routes/api.php`
 
-- [ ] **Langkah 1: Implementasikan `DokumenController` & `WalidataController`**
+- [x] **Langkah 1: Implementasikan `DokumenController` & `WalidataController`**
 - `GET /api/v1/dokumen`: Pencarian judul dan filter kategori dokumen.
 - `GET /api/v1/dokumen/{id}/download`: Menyajikan file PDF sekaligus increment counter unduh.
 - `GET /api/v1/walidata`: Daftar instansi lengkap dengan nomor WhatsApp dan link layanan resmi.
 
-- [ ] **Langkah 2: Uji coba endpoint via curl / php artisan test**
+- [x] **Langkah 2: Uji coba endpoint via curl / php artisan test**
 Verifikasi JSON response mengembalikan daftar walidata dan dokumen dengan benar.
 
-- [ ] **Langkah 3: Commit API dokumen & walidata**
+- [x] **Langkah 3: Commit API dokumen & walidata**
 ```bash
 git add backend/app/Http/Controllers/Api/ backend/routes/api.php
 git commit -m "feat(backend): implement publication documents and walidata API endpoints"
