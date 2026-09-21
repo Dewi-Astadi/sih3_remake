@@ -484,23 +484,23 @@ git commit -m "feat(frontend): implement homepage with quick search hero and liv
 - Create: `frontend/components/modules/BatchDownloadBar.tsx`
 - Create: `frontend/app/data-explorer/page.tsx`
 
-- [ ] **Langkah 1: Buat filter terpadu di `DataExplorerFilter.tsx`**
+- [x] **Langkah 1: Buat filter terpadu di `DataExplorerFilter.tsx`**
 - Tab kategori: *Semua*, *Hidrologi*, *Hidrometeorologi*, *Hidrogeologi*.
 - Dropdown: *Wilayah Sungai*, *DAS*, *Walidata*.
 - Debounced search input (300ms).
 
-- [ ] **Langkah 2: Buat `DataExplorerTable.tsx` (TanStack Table)**
+- [x] **Langkah 2: Buat `DataExplorerTable.tsx` (TanStack Table)**
 - Checkbox di setiap baris untuk pemilihan data batch.
 - Kolom informatif: No, Nama Pos & Lokasi, Tipe/Jenis, DAS/Wilayah Sungai, Walidata, Status.
 - Tombol **Unduh Cepat 1-Klik**: Tombol dropdown dengan opsi *Unduh Excel (.xlsx)* atau *Unduh CSV (.csv)* langsung memicu download browser tanpa pindah halaman.
 
-- [ ] **Langkah 3: Buat `BatchDownloadBar.tsx`**
+- [x] **Langkah 3: Buat `BatchDownloadBar.tsx`**
 Floating action bar di bagian bawah yang aktif saat user memilih 1 atau lebih checkbox pos: *"X Stasiun Terpilih — [Unduh Batch] [Batal]"*.
 
-- [ ] **Langkah 4: Integrasikan di `app/data-explorer/page.tsx`**
+- [x] **Langkah 4: Integrasikan di `app/data-explorer/page.tsx`**
 Hubungkan filter, tabel, pagination, dan notifikasi toast keberhasilan download.
 
-- [ ] **Langkah 5: Commit data explorer**
+- [x] **Langkah 5: Commit data explorer**
 ```bash
 git add frontend/components/modules/ frontend/app/data-explorer/
 git commit -m "feat(frontend): build unified open data explorer with 1-click and batch download"
