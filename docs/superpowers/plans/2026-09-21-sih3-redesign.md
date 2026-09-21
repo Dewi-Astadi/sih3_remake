@@ -552,10 +552,10 @@ git commit -m "feat(frontend): create publication documents repository with in-b
 **Files:**
 - Create: `frontend/app/walidata/page.tsx`
 
-- [ ] **Langkah 1: Buat antarmuka direktori mitra walidata**
+- [x] **Langkah 1: Buat antarmuka direktori mitra walidata**
 Kartu-kartu instansi walidata (BBWS SO, BMKG DIY & Jateng, Pusdataru, PUP ESDM, DLHK, PJT I) yang memuat logo, tupoksi, tombol kontak WhatsApp langsung, dan tautan layanan data eksternal.
 
-- [ ] **Langkah 2: Commit direktori walidata**
+- [x] **Langkah 2: Commit direktori walidata**
 ```bash
 git add frontend/app/walidata/
 git commit -m "feat(frontend): create clean walidata stakeholder directory page"
