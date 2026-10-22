@@ -35,8 +35,9 @@ const NAV_ITEMS: NavEntry[] = [
     ],
   },
   { label: "Walidata", href: "/walidata" },
-  {
-    label: "Galeri",
+{ label: "Analisis Data", href: "/analisis-data" },
+{
+  label: "Galeri",
     items: [
       { label: "Buletin", href: `${ORIGINAL_SITE}/info/buletin`, external: true },
       { label: "Peta", href: `${ORIGINAL_SITE}/info/galeripeta`, external: true },

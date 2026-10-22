@@ -22,12 +22,17 @@ type PosData = {
 
 export default function AnalisisDataPage() {
   const [daftarPos, setDaftarPos] = useState<Pos[]>([]);
+  const [jenisPosDipilih, setJenisPosDipilih] = useState<string>("");
   const [posTerpilih, setPosTerpilih] = useState<string[]>([]);
   const [dataPerPos, setDataPerPos] = useState<PosData[]>([]);
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [memuat, setMemuat] = useState(false);
   const [error, setError] = useState("");
+
+  const daftarPosTersaring = jenisPosDipilih
+  ? daftarPos.filter((pos) => pos.jenis === jenisPosDipilih)
+  : daftarPos;
 
   useEffect(() => {
     async function muatDaftarPos() {
@@ -77,10 +82,10 @@ export default function AnalisisDataPage() {
   }
 
   async function muatDataPerbandingan() {
-    if (posTerpilih.length < 2) {
-      setError("Pilih minimal 2 pos untuk dibandingkan.");
-      return;
-    }
+    if (posTerpilih.length < 2 || posTerpilih.length > 4) {
+  setError("Pilih 2 sampai 4 pos untuk dibandingkan.");
+  return;
+}
 
     if (!tanggalMulai || !tanggalSelesai || tanggalMulai > tanggalSelesai) {
       setError("Pilih rentang tanggal yang valid.");
@@ -130,6 +135,23 @@ export default function AnalisisDataPage() {
       setMemuat(false);
     }
   }
+
+  const daftarSatuan = [
+  ...new Set(
+    dataPerPos.flatMap(({ pengukuran }) =>
+      pengukuran
+        .filter(
+          (item) =>
+            typeof item.nilai === "number" &&
+            Number.isFinite(item.nilai)
+        )
+        .map((item) => item.satuan?.trim())
+        .filter((satuan): satuan is string => Boolean(satuan))
+    )
+  ),
+];
+
+const satuanBerbeda = daftarSatuan.length > 1;
 
   const statistik = dataPerPos.map(({ pos, pengukuran }) => {
     const nilaiValid = pengukuran
@@ -232,11 +254,40 @@ const dataGrafik = Object.values(
 
           <div className="mt-4 grid gap-5 md:grid-cols-2">
             <div>
+              <div className="mb-4">
+  <label
+    htmlFor="jenis-pos"
+    className="mb-2 block text-sm font-medium"
+  >
+    Jenis Pos
+  </label>
+
+  <select
+    id="jenis-pos"
+    value={jenisPosDipilih}
+    onChange={(event) => {
+      setJenisPosDipilih(event.target.value);
+      setPosTerpilih([]);
+      setDataPerPos([]);
+      setError("");
+    }}
+    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+  >
+    <option value="">Semua jenis pos</option>
+    {[...new Set(daftarPos.map((pos) => pos.jenis).filter(Boolean))]
+      .sort()
+      .map((jenis) => (
+        <option key={jenis} value={jenis}>
+          {jenis}
+        </option>
+      ))}
+  </select>
+</div>
               <p className="mb-2 text-sm font-medium">
                 Pilih pos (2–4 pos)
               </p>
               <div className="max-h-64 space-y-2 overflow-y-auto rounded-lg border border-slate-200 p-3">
-                {daftarPos.map((pos) => (
+                {daftarPosTersaring.map((pos) => (
                   <label
                     key={pos.id}
                     className="flex cursor-pointer items-start gap-2 text-sm"
@@ -257,10 +308,10 @@ const dataGrafik = Object.values(
                 ))}
 
                 {daftarPos.length === 0 && !error && (
-                  <p className="text-sm text-slate-500">
-                    Memuat daftar pos...
-                  </p>
-                )}
+                    <p className="text-sm text-slate-500">
+                        Belum ada pos pengamatan yang tersedia.
+                    </p>
+                    )}
               </div>
             </div>
 
@@ -344,6 +395,13 @@ const dataGrafik = Object.values(
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
   <h2 className="mb-4 text-lg font-semibold">
     Grafik Perbandingan Pengukuran
+    {satuanBerbeda && (
+  <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+    Perhatian: Data memiliki satuan pengukuran berbeda
+    ({daftarSatuan.join(", ")}). Perbandingan langsung
+    antarpos perlu ditafsirkan dengan hati-hati.
+  </p>
+)}
   </h2>
 
   {dataGrafik.length > 0 ? (
