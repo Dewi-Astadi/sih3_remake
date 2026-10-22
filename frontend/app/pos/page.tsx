@@ -53,14 +53,15 @@ export default function PemantauanPosPage() {
 
   useEffect(() => {
     getPosList()
-      .then((res: any) => {
+      .then((res: unknown) => {
         // Menangani respon berupa PaginatedResponse (res.data) atau Array biasa
-        if (Array.isArray(res)) {
-          setPosList(res);
-        } else if (res && Array.isArray(res.data)) {
-          setPosList(res.data);
-        } else if (res && Array.isArray(res.items)) {
-          setPosList(res.items);
+        const dataRes = res as { data?: Pos[]; items?: Pos[] } | Pos[];
+        if (Array.isArray(dataRes)) {
+          setPosList(dataRes);
+        } else if (dataRes && Array.isArray(dataRes.data)) {
+          setPosList(dataRes.data);
+        } else if (dataRes && Array.isArray(dataRes.items)) {
+          setPosList(dataRes.items);
         } else {
           setPosList([]);
         }

@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowUpRight, Clock, Info } from "lucide-react";
 import { Container } from "@/components/layout/Container";
+import { DatasetHero } from "@/components/dataset/DatasetHero";
 import { StatusBadge } from "@/components/home/StatusBadge";
 import {
   MIN_GAUGES_PER_BASIN,
@@ -25,23 +26,11 @@ export function FloodRoutingContent({
 }) {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-[#0E2A4E] py-12 sm:py-16">
-        <Container>
-          <div className="max-w-[760px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#F2A900]">
-              Prakiraan waktu banjir
-            </p>
-            <h1 className="mt-2 text-[28px] font-semibold leading-[1.2] tracking-[-0.015em] text-white sm:text-[36px] lg:text-[40px]">
-              Flood Routing
-            </h1>
-            <p className="mt-3 max-w-[600px] text-[14px] leading-relaxed text-[#C9D6E8] sm:text-[15px]">
-              Perhitungan pergerakan aliran di suatu sungai untuk memperkirakan
-              waktu tiba banjir di bagian hilir.
-            </p>
-          </div>
-        </Container>
-      </section>
+      <DatasetHero
+        kicker="Prakiraan waktu banjir"
+        title="Flood Routing"
+        description="Perhitungan pergerakan aliran di suatu sungai untuk memperkirakan waktu tiba banjir di bagian hilir."
+      />
 
       <section className="py-8 sm:py-10">
         <Container>
