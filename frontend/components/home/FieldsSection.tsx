@@ -22,7 +22,7 @@ export function FieldsSection({ fields }: { fields: FieldSummary[] }) {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {fields.map((field) => {
+          {fields.map((field, index) => {
             const label = TIPE_LABEL[field.tipe];
             const subCategory = SUB_CATEGORIES[field.tipe] || "";
             const definition = TIPE_DEFINITION[field.tipe];
@@ -30,6 +30,8 @@ export function FieldsSection({ fields }: { fields: FieldSummary[] }) {
             return (
               <article
                 key={field.tipe}
+                data-reveal
+                style={{ "--reveal-delay": `${index * 70}ms` } as React.CSSProperties}
                 className="flex flex-col justify-between rounded-[8px] border border-[#D5DBE3] bg-white p-[22px] transition-shadow hover:shadow-[0_2px_10px_rgba(14,42,78,0.08)]"
               >
                 <div>

@@ -47,7 +47,7 @@ export function SummaryBlocks({
   const order = ["hidrologi", "hidrometeorologi", "hidrogeologi"] as const;
 
   return (
-    <div className="relative z-10 -mt-11">
+    <div data-reveal className="relative z-10 -mt-11">
       <Container>
         <div className="grid grid-cols-1 divide-y divide-[#E4E8EE] sm:grid-cols-2 sm:divide-y-0 sm:divide-x lg:grid-cols-4 rounded-[8px] border border-[#D5DBE3] bg-white shadow-[0_2px_10px_rgba(14,42,78,0.08)]">
           {order.map((key) => {

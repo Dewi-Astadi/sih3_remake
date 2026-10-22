@@ -117,8 +117,14 @@ export function FloodRoutingContent({
                   </div>
 
                   <div className="mt-4 space-y-3">
-                    {data.basins.map((basin) => (
-                      <BasinCard key={basin.das} basin={basin} />
+                    {data.basins.map((basin, index) => (
+                      <div
+                        key={basin.das}
+                        data-reveal
+                        style={{ "--reveal-delay": `${index * 70}ms` } as React.CSSProperties}
+                      >
+                        <BasinCard basin={basin} />
+                      </div>
                     ))}
                   </div>
 

@@ -6,7 +6,7 @@ export function DownloadCtaSection() {
   return (
     <section className="py-14">
       <Container>
-        <div className="rounded-[8px] bg-[#0E2A4E] p-8 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+        <div data-reveal className="rounded-[8px] bg-[#0E2A4E] p-8 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
           {/* Left Column: CTA Info */}
           <div>
             <h2 className="text-[26px] font-semibold text-white tracking-[-0.01em]">

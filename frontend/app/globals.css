@@ -102,6 +102,21 @@
 }
 
 @layer utilities {
+  /*
+   * Scroll reveal. Only the hidden state lives in CSS; the reveal itself is a
+   * Web Animation (see RevealOnScroll) so nothing mutates attributes during
+   * hydration. Both properties are compositor-friendly: no layout work.
+   *
+   * The hidden state requires the `.js` flag set before paint, so content stays
+   * visible without JavaScript, and it is skipped for reduced-motion users.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .js [data-reveal] {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+    }
+  }
+
   /* Screen-reader only, restored on focus (skip link). */
   .skip-link {
     position: absolute;
