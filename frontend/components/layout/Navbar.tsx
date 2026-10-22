@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -24,17 +25,13 @@ const ORIGINAL_SITE = "https://sih3.bbwsserayuopak.id";
 
 const NAV_ITEMS: NavEntry[] = [
   { label: "Beranda", href: "/" },
-  {
-    label: "FloodRouting",
-    href: `${ORIGINAL_SITE}/info/floodrouting`,
-    external: true,
-  },
+  { label: "FloodRouting", href: "/floodrouting" },
   {
     label: "SIH3",
     items: [
-      { label: "Hidrologi", href: "/data-explorer?tipe=hidrologi" },
-      { label: "Hidrometeorologi", href: "/data-explorer?tipe=hidrometeorologi" },
-      { label: "Hidrogeologi", href: "/data-explorer?tipe=hidrogeologi" },
+      { label: "Hidrologi", href: "/hidrologi" },
+      { label: "Hidrometeorologi", href: "/hidrometeorologi" },
+      { label: "Hidrogeologi", href: "/hidrogeologi" },
     ],
   },
   { label: "Walidata", href: "/walidata" },
@@ -114,20 +111,14 @@ export function Navbar() {
         <Container className="flex items-center h-[76px] gap-3">
           {/* Brand & Logos */}
           <Link href="/" className="flex items-center gap-3 no-underline">
-            <div className="w-12 h-12 rounded-[6px] border border-dashed border-[#8A96A6] flex items-center justify-center text-[11px] text-[#5B6675] font-medium shrink-0">
-              Logo PU
-            </div>
-            <div className="w-12 h-12 rounded-[6px] border border-dashed border-[#8A96A6] flex items-center justify-center text-[11px] text-[#5B6675] font-medium shrink-0">
-              BBWS
-            </div>
-            <div className="ml-1 leading-[1.25]">
-              <div className="text-[18px] font-semibold text-[#14396A]">
-                SIH3 Serayu Opak
-              </div>
-              <div className="text-[13px] text-[#5B6675]">
-                Hidrologi &middot; Hidrometeorologi &middot; Hidrogeologi
-              </div>
-            </div>
+            <Image
+              src="/brand/logo-header.png"
+              alt="Portal SIH3 — Wilayah Sungai Serayu-Bogowonto dan Progo-Opak-Serang"
+              width={363}
+              height={60}
+              priority
+              className="h-8 w-auto sm:h-10 lg:h-11"
+            />
           </Link>
 
           {/* Desktop navigation */}

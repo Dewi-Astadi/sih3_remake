@@ -59,7 +59,7 @@ export function SummaryBlocks({
             return (
               <Link
                 key={key}
-                href={`/data-explorer?tipe=${key}`}
+                href={`/${key}`}
                 className="group flex flex-col justify-between p-5 transition-colors hover:bg-[#F8FAFC]"
               >
                 <div>

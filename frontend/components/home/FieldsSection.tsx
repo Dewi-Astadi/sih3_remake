@@ -45,7 +45,7 @@ export function FieldsSection({ fields }: { fields: FieldSummary[] }) {
                 </div>
 
                 <Link
-                  href={`/data-explorer?tipe=${field.tipe}`}
+                  href={`/${field.tipe}`}
                   className="inline-flex items-center text-[15px] font-medium text-[#0B5CAD] hover:text-[#14396A]"
                 >
                   Lihat data {label.toLowerCase()} &rarr;

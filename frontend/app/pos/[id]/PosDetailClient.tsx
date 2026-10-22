@@ -272,6 +272,29 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
     };
   }, [timeseriesData, historyPage, historyPerPage]);
 
+  const walidata = useMemo<Walidata | null>(() => {
+    if (!pos) return null;
+    const raw = pos.walidata;
+    if (raw && "deskripsi" in raw && (raw as Walidata).deskripsi) {
+      return raw as Walidata;
+    }
+    const matched = FALLBACK_WALIDATA.find(
+      (w) => w.id === pos.walidata_id || (raw && w.singkatan === raw.singkatan)
+    );
+    if (matched) return matched;
+    if (raw) {
+      return {
+        id: raw.id,
+        nama: raw.nama,
+        singkatan: raw.singkatan,
+        deskripsi: "Unit pengelola data hidrologi Wilayah Sungai Serayu Opak & Serayu Bogowonto.",
+        kontak_wa: "+6281234567890",
+        website_url: "https://sda.pu.go.id",
+      };
+    }
+    return null;
+  }, [pos]);
+
   // ==========================================================================
   // STATE LOADING SKELETON
   // ==========================================================================
@@ -335,28 +358,6 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
 
   const statusAlat = formatStatusAlat(pos.status_alat);
   const tipeBadge = formatTipeBadge(pos.tipe);
-  const walidata = useMemo<Walidata | null>(() => {
-    if (!pos) return null;
-    const raw = pos.walidata;
-    if (raw && "deskripsi" in raw && (raw as Walidata).deskripsi) {
-      return raw as Walidata;
-    }
-    const matched = FALLBACK_WALIDATA.find(
-      (w) => w.id === pos.walidata_id || (raw && w.singkatan === raw.singkatan)
-    );
-    if (matched) return matched;
-    if (raw) {
-      return {
-        id: raw.id,
-        nama: raw.nama,
-        singkatan: raw.singkatan,
-        deskripsi: "Unit pengelola data hidrologi Wilayah Sungai Serayu Opak & Serayu Bogowonto.",
-        kontak_wa: "+6281234567890",
-        website_url: "https://sda.pu.go.id",
-      };
-    }
-    return null;
-  }, [pos]);
 
   return (
     <div className="min-h-screen bg-slate-50/70 pb-28">
@@ -694,7 +695,10 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
         {/* ================================================================= */}
         {/* SEKSI TABEL RIWAYAT DATA HISTORIS & UNDUH LENGKAP */}
         {/* ================================================================= */}
-        <section className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <section
+          id="riwayat"
+          className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden scroll-mt-24"
+        >
           {/* Header Tabel Riwayat */}
           <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">

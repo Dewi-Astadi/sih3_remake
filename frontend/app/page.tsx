@@ -59,7 +59,7 @@ async function HomeData() {
   return (
     <>
       <SummaryBlocks fields={fields} lastUpdated={lastUpdated} now={now} />
-      <MonitoringSection rows={rows} now={now} />
+      <MonitoringSection rows={rows} />
       <FieldsSection fields={fields} />
     </>
   );

@@ -71,8 +71,8 @@
   body {
     background-color: var(--page);
     color: var(--text);
-    font-family: var(--font-noto-sans), "Noto Sans", ui-sans-serif, system-ui,
-      sans-serif;
+    font-family: var(--font-public-sans), "Public Sans", ui-sans-serif,
+      system-ui, sans-serif;
     font-size: 15px;
     line-height: 1.55;
     font-feature-settings: "rlig" 1, "calt" 1;

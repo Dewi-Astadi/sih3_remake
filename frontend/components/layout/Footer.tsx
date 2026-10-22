@@ -5,10 +5,11 @@ import { Container } from "@/components/layout/Container";
 const ORIGINAL_SITE = "https://sih3.bbwsserayuopak.id";
 
 const DATA_LINKS = [
-  { label: "Hidrologi", href: "/data-explorer?tipe=hidrologi" },
-  { label: "Hidrometeorologi", href: "/data-explorer?tipe=hidrometeorologi" },
-  { label: "Hidrogeologi", href: "/data-explorer?tipe=hidrogeologi" },
+  { label: "Hidrologi", href: "/hidrologi" },
+  { label: "Hidrometeorologi", href: "/hidrometeorologi" },
+  { label: "Hidrogeologi", href: "/hidrogeologi" },
   { label: "Walidata", href: "/walidata" },
+  { label: "FloodRouting", href: "/floodrouting" },
 ];
 
 const GALLERY_LINKS = [

@@ -20,8 +20,11 @@ function getCategoryTag(row: PosRow): string {
   if (row.jenisKey === "duga-air") {
     return "Duga Air · AWLR";
   }
-  if (row.jenisKey === "curah-hujan" || row.jenisKey === "klimatologi") {
+  if (row.jenisKey === "curah-hujan") {
     return "Curah Hujan · ARR";
+  }
+  if (row.jenisKey === "klimatologi") {
+    return "Klimatologi";
   }
   if (row.jenisKey === "kualitas-air") {
     return "Kualitas Air";
@@ -48,6 +51,13 @@ function getParamLabel(row: PosRow): string {
   return row.jenisMeta?.primaryLabel ?? "Nilai pengukuran";
 }
 
+/** Water level and rainfall cards show a trend line; quality cards show the
+ *  secondary parameters instead. */
+const SHOWS_PARAMS: ReadonlyArray<PosRow["jenisKey"]> = [
+  "kualitas-air",
+  "muka-air-tanah",
+];
+
 function generateSparkline(row: PosRow): string {
   const id = row.id;
   const tone = row.status.tone;
@@ -66,13 +76,7 @@ function generateSparkline(row: PosRow): string {
   return `0,${22 + offset} 20,${23 + offset} 40,${21 + offset} 60,${22 + offset} 80,${24 + offset} 100,${23 + offset} 120,${22 + offset} 140,${21 + offset} 160,${22 + offset} 180,${23 + offset} 200,${22 + offset}`;
 }
 
-export function MonitoringSection({
-  rows,
-  now,
-}: {
-  rows: PosRow[];
-  now: Date;
-}) {
+export function MonitoringSection({ rows }: { rows: PosRow[] }) {
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
 
   const filteredRows = useMemo(() => {
@@ -158,7 +162,7 @@ export function MonitoringSection({
             const categoryTag = getCategoryTag(row);
             const paramLabel = getParamLabel(row);
             const hasStatus =
-              row.status && row.status.label && row.status.label !== "Tanpa Status";
+              row.status?.label && row.status.label !== "—";
 
             // Location
             const river = row.sungai || row.sub_das;
@@ -176,13 +180,13 @@ export function MonitoringSection({
                 : "-";
             const unit = row.latest?.satuan || "";
 
-            // Additional parameters if present
+            // Additional parameters, labelled from the jenis metadata
             const params = row.latest?.parameter_tambahan;
             const paramList =
-              params && typeof params === "object"
-                ? Object.entries(params)
-                    .slice(0, 5)
-                    .map(([k, v]) => `${k} ${v}`)
+              SHOWS_PARAMS.includes(row.jenisKey) && params
+                ? (row.jenisMeta?.secondary ?? [])
+                    .filter((p) => params[p.key] != null)
+                    .map((p) => `${p.label} ${params[p.key]}`)
                     .join(" · ")
                 : null;
 
