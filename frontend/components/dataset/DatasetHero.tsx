@@ -3,8 +3,9 @@ import Image from "next/image";
 import { Container } from "@/components/layout/Container";
 
 /**
- * Hero for the per-field dataset pages. Same treatment as the homepage hero
- * (photo + dark tint) so the two pages read as one product.
+ * Hero for the dataset and flood-routing pages. Same treatment as the homepage
+ * hero (photo + dark tint) so the pages read as one product. The height is
+ * fixed so a shorter description does not produce a visibly shorter hero.
  */
 export function DatasetHero({
   kicker,
@@ -16,7 +17,7 @@ export function DatasetHero({
   description: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-[#3A6EA5] py-12 sm:py-16">
+    <section className="relative flex min-h-[320px] items-center overflow-hidden bg-[#3A6EA5] py-12 sm:min-h-[330px] sm:py-16">
       <Image
         src="/images/hero-bendungan.jpg"
         alt=""
