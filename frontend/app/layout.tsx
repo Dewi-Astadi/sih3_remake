@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Public_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
@@ -33,6 +33,11 @@ export const metadata: Metadata = {
     "Kualitas Air",
   ],
   authors: [{ name: "Balai Besar Wilayah Sungai Serayu Opak" }],
+};
+
+/** Tints browser UI chrome to match the portal's navy header. */
+export const viewport: Viewport = {
+  themeColor: "#0A2140",
 };
 
 export default function RootLayout({
