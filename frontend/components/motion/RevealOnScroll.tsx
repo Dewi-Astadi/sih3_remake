@@ -4,76 +4,119 @@ import { useEffect } from "react";
 
 const REVEAL_DURATION = 520;
 const REVEAL_EASING = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+/** Fraction of the viewport height an element must reach before it reveals. */
+const TRIGGER_RATIO = 0.92;
 
 /**
  * Reveals elements marked with `data-reveal` as they scroll into view.
  *
  * The animation runs through the Web Animations API instead of a class toggle,
- * so no attribute changes during hydration. Streamed Suspense boundaries arrive
- * after mount, so a MutationObserver picks up elements that appear later.
+ * so no attribute changes during hydration.
  *
- * Each element is animated once and then released; nothing stays observed.
+ * A rAF-throttled sweep drives everything rather than an IntersectionObserver:
+ * an observer never fires for an element that jumps from below the fold to
+ * above it in one frame (fast wheel, scrollbar drag, anchor jump), and its
+ * registrations go stale when React replaces list nodes.
+ *
+ * The sweep only walks a pending list, not the document, so a scroll frame
+ * touches at most a handful of elements and costs nothing once the page has
+ * been read through. The list is rebuilt only when React mounts new nodes.
  */
 export function RevealOnScroll() {
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const done = new WeakSet<Element>();
+    let pending: HTMLElement[] = [];
+    const revealed = new WeakSet<Element>();
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const element = entry.target as HTMLElement;
-          observer.unobserve(element);
-          if (done.has(element)) continue;
-          done.add(element);
+    const reveal = (element: HTMLElement) => {
+      if (revealed.has(element)) return;
+      revealed.add(element);
 
-          const delay = Number.parseFloat(
-            element.style.getPropertyValue("--reveal-delay")
-          );
+      const delay = Number.parseFloat(element.style.getPropertyValue("--reveal-delay"));
 
-          element.animate(
-            [
-              { opacity: 0, transform: "translate3d(0, 18px, 0)" },
-              { opacity: 1, transform: "translate3d(0, 0, 0)" },
-            ],
-            {
-              duration: REVEAL_DURATION,
-              delay: Number.isFinite(delay) ? delay : 0,
-              easing: REVEAL_EASING,
-              fill: "forwards",
-            }
-          );
+      // The end state is written as inline styles rather than kept via
+      // `fill: "forwards"`: a finished animation with no JS reference can be
+      // garbage collected, which drops the fill and snaps the element back to
+      // the CSS `opacity: 0` rule.
+      const settle = () => {
+        element.style.opacity = "1";
+        element.style.transform = "none";
+      };
+
+      const animation = element.animate(
+        [
+          { opacity: 0, transform: "translate3d(0, 18px, 0)" },
+          { opacity: 1, transform: "translate3d(0, 0, 0)" },
+        ],
+        {
+          duration: REVEAL_DURATION,
+          delay: Number.isFinite(delay) ? delay : 0,
+          easing: REVEAL_EASING,
+          fill: "forwards",
         }
-      },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
-    );
+      );
 
-    const observeAll = (root: ParentNode) => {
-      for (const element of root.querySelectorAll("[data-reveal]")) {
-        if (!done.has(element)) observer.observe(element);
-      }
+      animation.finished.then(settle).catch(settle);
     };
 
-    observeAll(document);
+    const sweep = () => {
+      if (pending.length === 0) return;
 
-    // Content streamed in by Suspense mounts after this effect runs.
+      const limit = window.innerHeight * TRIGGER_RATIO;
+      const next: HTMLElement[] = [];
+
+      for (const element of pending) {
+        // React may have replaced the node since the list was built.
+        if (!element.isConnected) continue;
+        if (element.getBoundingClientRect().top < limit) {
+          reveal(element);
+        } else {
+          next.push(element);
+        }
+      }
+
+      pending = next;
+    };
+
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        sweep();
+      });
+    };
+
+    /** Rebuilds the pending list; only runs when new nodes appear. */
+    const collect = () => {
+      pending = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]")).filter(
+        (element) => !revealed.has(element)
+      );
+      schedule();
+    };
+
+    collect();
+
+    // Content streamed in by Suspense, or re-rendered by a filter, mounts later.
     const mutations = new MutationObserver((records) => {
       for (const record of records) {
-        for (const node of record.addedNodes) {
-          if (!(node instanceof Element)) continue;
-          if (node.hasAttribute("data-reveal")) observer.observe(node);
-          observeAll(node);
+        if (record.addedNodes.length > 0) {
+          collect();
+          return;
         }
       }
     });
     mutations.observe(document.body, { childList: true, subtree: true });
 
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+
     return () => {
-      observer.disconnect();
       mutations.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (frame) cancelAnimationFrame(frame);
     };
   }, []);
 

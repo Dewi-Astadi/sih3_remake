@@ -32,7 +32,17 @@ export interface PdfViewerDialogProps {
 /**
  * Format ukuran berkas dalam byte menjadi format yang mudah dibaca (KB / MB)
  */
-export function formatFileSize(bytes?: number | null): string {
+export function formatFileSize(bytes?: number | string | null): string {
+  if (bytes === null || bytes === undefined || bytes === "") return "-";
+
+  // The API sometimes returns a preformatted size ("6.2 MB") instead of a byte
+  // count, so pass those through rather than failing on arithmetic.
+  if (typeof bytes === "string") {
+    const trimmed = bytes.trim();
+    if (!/^\d+(\.\d+)?$/.test(trimmed)) return trimmed;
+    bytes = Number(trimmed);
+  }
+
   if (!bytes || bytes <= 0) return "-";
   const units = ["B", "KB", "MB", "GB"];
   let i = 0;

@@ -440,12 +440,14 @@ function PublikasiContent() {
         ) : viewMode === "grid" ? (
           // 3A. Grid View: Katalog Kartu Clean Shadcn UI
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {documents.map((doc) => {
+            {documents.map((doc, index) => {
               const badgeProps = getCategoryBadgeProps(doc.kategori);
 
               return (
                 <div
                   key={doc.id}
+                  data-reveal
+                  style={{ "--reveal-delay": `${Math.min(index, 5) * 60}ms` } as React.CSSProperties}
                   className="group bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between"
                 >
                   <div className="space-y-3.5">
@@ -530,7 +532,10 @@ function PublikasiContent() {
           </div>
         ) : (
           // 3B. Table View: Tampilan Tabel Bersih
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <div
+            data-reveal
+            className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden"
+          >
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-slate-600">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-700 uppercase tracking-wider">

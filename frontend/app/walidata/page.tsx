@@ -291,7 +291,10 @@ function WalidataDirectoryContent() {
         {/* ========================================================================= */}
         {/* 2. CALLOUT KETERBUKAAN DATA (SATU DATA INDONESIA) */}
         {/* ========================================================================= */}
-        <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-800 relative overflow-hidden">
+        <div
+          data-reveal
+          className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-800 relative overflow-hidden"
+        >
           {/* Decorative subtle background overlay */}
           <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-1/3 -mb-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -422,7 +425,7 @@ function WalidataDirectoryContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredList.map((instansi) => {
+            {filteredList.map((instansi, index) => {
               const meta = WALIDATA_METADATA[instansi.singkatan] || {
                 alamat: "Kantor Instansi Mitra Walidata SIH3 Serayu Opak",
                 kategori: "Instansi Mitra Pengelola Data",
@@ -445,6 +448,8 @@ function WalidataDirectoryContent() {
               return (
                 <Card
                   key={instansi.id}
+                  data-reveal
+                  style={{ "--reveal-delay": `${Math.min(index, 5) * 60}ms` } as React.CSSProperties}
                   className={`bg-white border border-slate-200/90 rounded-2xl flex flex-col justify-between hover:shadow-md transition-all duration-200 group ${meta.accentColor.border}`}
                 >
                   <CardHeader className="p-6 pb-4 space-y-4">
@@ -590,7 +595,10 @@ function WalidataDirectoryContent() {
         {/* ========================================================================= */}
         {/* 5. INFORMASI TATA CARA PERMOHONAN INFORMASI PUBLIK (PPID) */}
         {/* ========================================================================= */}
-        <section className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 space-y-6">
+        <section
+          data-reveal
+          className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 space-y-6"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
               <Info className="w-5 h-5" />

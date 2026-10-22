@@ -220,7 +220,10 @@ function DataExplorerContent() {
       {/* 2. Main Content: Filter, Info Strip & Data Table */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
         {/* Banner Info Petunjuk Batch */}
-        <div className="flex items-center gap-3 p-3.5 rounded-xl bg-sky-50/70 border border-sky-200/80 text-xs text-sky-900">
+        <div
+          data-reveal
+          className="flex items-center gap-3 p-3.5 rounded-xl bg-sky-50/70 border border-sky-200/80 text-xs text-sky-900"
+        >
           <Info className="w-4 h-4 text-sky-600 shrink-0" />
           <span>
             <strong>Tips Pengunduhan:</strong> Anda dapat mengunduh data langsung per stasiun melalui
@@ -230,6 +233,7 @@ function DataExplorerContent() {
         </div>
 
         {/* Komponen Filter Terpadu */}
+        <div data-reveal style={{ "--reveal-delay": "60ms" } as React.CSSProperties}>
         <DataExplorerFilter
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
@@ -239,7 +243,10 @@ function DataExplorerContent() {
           isLoading={isLoading}
         />
 
+        </div>
+
         {/* Komponen Tabel Data Explorer (TanStack Table + Shadcn UI) */}
+        <div data-reveal style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
         <DataExplorerTable
           data={posData}
           isLoading={isLoading}
@@ -256,6 +263,7 @@ function DataExplorerContent() {
           onSelectedIdsChange={setSelectedIds}
           onResetFilter={handleResetFilter}
         />
+        </div>
       </main>
 
       {/* 3. Floating Batch Download Bar (Muncul saat selectedIds.length > 0) */}

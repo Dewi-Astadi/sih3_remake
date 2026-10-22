@@ -110,7 +110,8 @@ export interface Dokumen {
   nomor_dokumen?: string | null;
   deskripsi?: string | null;
   file_path: string;
-  file_size?: number | null;
+  /** Byte count, or a preformatted size string from the API (e.g. "6.2 MB"). */
+  file_size?: number | string | null;
   file_extension?: string | null;
   download_count: number;
   created_at?: string;
