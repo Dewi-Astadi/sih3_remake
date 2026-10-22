@@ -247,35 +247,45 @@ export function Navbar() {
                     />
                   </button>
 
-                  {open && (
-                    <ul
-                      id={`${menuId}-${entry.label}`}
-                      onClick={() => setOpenGroup(null)}
-                      className="absolute left-0 top-full z-50 mt-1 min-w-[200px] rounded-[6px] border border-[#D5DBE3] bg-white py-1 shadow-md"
-                    >
-                      {entry.items.map((item) => (
-                        <li key={item.label}>
-                          {item.external ? (
-                            <a
-                              href={item.href}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="block px-4 py-2 text-[14px] text-[#1B2430] hover:bg-[#F5F7FA] hover:text-[#14396A]"
-                            >
-                              {item.label}
-                            </a>
-                          ) : (
-                            <Link
-                              href={item.href}
-                              className="block px-4 py-2 text-[14px] text-[#1B2430] hover:bg-[#F5F7FA] hover:text-[#14396A]"
-                            >
-                              {item.label}
-                            </Link>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {/*
+                    Kept mounted so the panel can animate both ways: `visibility`
+                    transitions discretely, so links stay untabbable while closed
+                    and the exit fade still plays.
+                  */}
+                  <ul
+                    id={`${menuId}-${entry.label}`}
+                    aria-hidden={!open}
+                    onClick={() => setOpenGroup(null)}
+                    className={cn(
+                      "absolute left-0 top-full z-50 mt-1 min-w-[200px] origin-top rounded-[6px] border border-[#D5DBE3] bg-white py-1 shadow-md",
+                      "transition-[opacity,translate,scale,visibility] transition-discrete duration-150 ease-out",
+                      open
+                        ? "visible translate-y-0 scale-100 opacity-100"
+                        : "invisible -translate-y-1 scale-[0.98] opacity-0 pointer-events-none"
+                    )}
+                  >
+                    {entry.items.map((item) => (
+                      <li key={item.label}>
+                        {item.external ? (
+                          <a
+                            href={item.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block px-4 py-2 text-[14px] text-[#1B2430] hover:bg-[#F5F7FA] hover:text-[#14396A]"
+                          >
+                            {item.label}
+                          </a>
+                        ) : (
+                          <Link
+                            href={item.href}
+                            className="block px-4 py-2 text-[14px] text-[#1B2430] hover:bg-[#F5F7FA] hover:text-[#14396A]"
+                          >
+                            {item.label}
+                          </Link>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               );
             })}
