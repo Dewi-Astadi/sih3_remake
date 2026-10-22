@@ -2,6 +2,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { apiClient } from "@/lib/api";
 import type { Pos, Pengukuran, PosTimeseriesResponse } from "@/lib/types";
 
@@ -140,6 +150,32 @@ export default function AnalisisDataPage() {
         : null,
     };
   });
+const dataGrafik = Object.values(
+  dataPerPos.reduce<
+    Record<string, Record<string, string | number | null>>
+  >((hasil, { pos, pengukuran }) => {
+    pengukuran.forEach((item) => {
+      const waktu = item.recorded_at;
+      const nilai = Number(item.nilai);
+
+      if (!waktu || item.nilai == null || !Number.isFinite(nilai)) {
+        return;
+      }
+
+      if (!hasil[waktu]) {
+        hasil[waktu] = { waktu };
+      }
+
+      hasil[waktu][String(pos.id)] = nilai;
+    });
+
+    return hasil;
+  }, {})
+).sort(
+  (a, b) =>
+    new Date(String(a.waktu)).getTime() -
+    new Date(String(b.waktu)).getTime()
+);
 
   function eksporCSV() {
     const baris = [
@@ -305,6 +341,51 @@ export default function AnalisisDataPage() {
               </div>
             </section>
 
+            <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 className="mb-4 text-lg font-semibold">
+    Grafik Perbandingan Pengukuran
+  </h2>
+
+  {dataGrafik.length > 0 ? (
+    <div className="h-80 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={dataGrafik}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey="waktu"
+            tickFormatter={(value) =>
+              new Date(value).toLocaleDateString("id-ID")
+            }
+          />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+
+          {dataPerPos.map(({ pos }, index) => (
+            <Line
+              key={pos.id}
+              type="monotone"
+              dataKey={String(pos.id)}
+              name={pos.nama}
+              stroke={
+                ["#2563eb", "#dc2626", "#16a34a", "#9333ea"][
+                  index % 4
+                ]
+              }
+              strokeWidth={2}
+              dot={false}
+              connectNulls={false}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  ) : (
+    <p className="text-sm text-slate-500">
+      Belum ada data pengukuran untuk ditampilkan dalam grafik.
+    </p>
+  )}
+</section>
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold">Tabel Perbandingan</h2>
