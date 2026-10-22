@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -57,12 +63,64 @@ function isActive(entry: NavEntry, pathname: string): boolean {
   return pathname === entry.href.split("?")[0];
 }
 
+/** useLayoutEffect warns during SSR; fall back to useEffect on the server. */
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
+
+/** Base width of the indicator before it is scaled to the active item. */
+const INDICATOR_BASE_WIDTH = 100;
+
 export function Navbar() {
   const pathname = usePathname();
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
   const menuId = useId();
+
+  const activeKey = NAV_ITEMS.find((entry) => isActive(entry, pathname))?.label ?? null;
+  const [indicator, setIndicator] = useState<{
+    x: number;
+    width: number;
+    bottom: number;
+  } | null>(null);
+  // Slides only after the first placement, so the bar does not fly in on load.
+  const [slides, setSlides] = useState(false);
+
+  useIsomorphicLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const measure = () => {
+      const item = activeKey
+        ? nav.querySelector<HTMLElement>(`[data-nav-key="${activeKey}"]`)
+        : null;
+      if (!item) {
+        setIndicator(null);
+        return;
+      }
+      const navBox = nav.getBoundingClientRect();
+      const box = item.getBoundingClientRect();
+      setIndicator({
+        x: box.left - navBox.left,
+        width: box.width,
+        bottom: navBox.bottom - box.bottom,
+      });
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(nav);
+    // Web fonts land after first paint and change label widths.
+    document.fonts?.ready.then(measure).catch(() => undefined);
+
+    return () => observer.disconnect();
+  }, [activeKey, pathname]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setSlides(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     if (!openGroup) return;
@@ -125,7 +183,7 @@ export function Navbar() {
           <nav
             ref={navRef}
             aria-label="Navigasi utama"
-            className="ml-auto hidden items-center gap-1 lg:flex"
+            className="relative ml-auto hidden items-center gap-1 lg:flex"
           >
             {NAV_ITEMS.map((entry) => {
               if (!isGroup(entry)) {
@@ -147,10 +205,11 @@ export function Navbar() {
                   <Link
                     key={entry.label}
                     href={entry.href}
+                    data-nav-key={entry.label}
                     className={cn(
                       "px-3 py-2 text-[15px] font-medium transition-colors",
                       active
-                        ? "text-[#14396A] shadow-[inset_0_-3px_0_#F2A900]"
+                        ? "text-[#14396A]"
                         : "text-[#1B2430] hover:text-[#14396A]"
                     )}
                     aria-current={active ? "page" : undefined}
@@ -170,10 +229,11 @@ export function Navbar() {
                     aria-expanded={open}
                     aria-controls={`${menuId}-${entry.label}`}
                     onClick={() => setOpenGroup(open ? null : entry.label)}
+                    data-nav-key={entry.label}
                     className={cn(
                       "inline-flex items-center gap-1 px-3 py-2 text-[15px] font-medium transition-colors",
                       active
-                        ? "text-[#14396A] shadow-[inset_0_-3px_0_#F2A900]"
+                        ? "text-[#14396A]"
                         : "text-[#1B2430] hover:text-[#14396A]"
                     )}
                   >
@@ -227,6 +287,29 @@ export function Navbar() {
             >
               Unduh Data
             </Link>
+
+            {/*
+              One bar for the whole nav: it is positioned from the active item's
+              measured box and slides between items. Width is the base width
+              scaled to the target, so a label change animates too.
+            */}
+            <span
+              aria-hidden="true"
+              className={cn(
+                "pointer-events-none absolute left-0 h-[3px] origin-left rounded-full bg-[#F2A900]",
+                slides
+                  ? "transition-[transform,width,bottom] duration-300 ease-out"
+                  : "transition-none"
+              )}
+              style={{
+                width: INDICATOR_BASE_WIDTH,
+                bottom: indicator?.bottom ?? 0,
+                transform: indicator
+                  ? `translateX(${indicator.x}px) scaleX(${indicator.width / INDICATOR_BASE_WIDTH})`
+                  : "scaleX(0)",
+                opacity: indicator ? 1 : 0,
+              }}
+            />
           </nav>
 
           {/* Mobile menu button */}
