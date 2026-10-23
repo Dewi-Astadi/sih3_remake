@@ -29,6 +29,22 @@ export default function AnalisisDataPage() {
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [memuat, setMemuat] = useState(false);
   const [error, setError] = useState("");
+  const [halamanTabel, setHalamanTabel] = useState(1);
+  const jumlahPerHalaman = 10;
+
+const semuaBarisTabel = dataPerPos.flatMap(({ pos, pengukuran }) =>
+  pengukuran.map((item) => ({ pos, item }))
+);
+
+const totalHalaman = Math.max(
+  1,
+  Math.ceil(semuaBarisTabel.length / jumlahPerHalaman)
+);
+
+const barisHalamanIni = semuaBarisTabel.slice(
+  (halamanTabel - 1) * jumlahPerHalaman,
+  halamanTabel * jumlahPerHalaman
+);
 
   const daftarPosTersaring = jenisPosDipilih
   ? daftarPos.filter((pos) => pos.jenis === jenisPosDipilih)
@@ -467,25 +483,54 @@ const dataGrafik = Object.values(
                     </tr>
                   </thead>
                   <tbody>
-                    {dataPerPos.flatMap(({ pos, pengukuran }) =>
-                      pengukuran.map((item) => (
-                        <tr
-                          key={`${pos.id}-${item.id}`}
-                          className="border-b border-slate-100"
-                        >
-                          <td className="p-3">{pos.nama}</td>
-                          <td className="p-3">
-                            {new Date(item.recorded_at).toLocaleString(
-                              "id-ID"
-                            )}
-                          </td>
-                          <td className="p-3">{item.nilai ?? "—"}</td>
-                          <td className="p-3">{item.satuan}</td>
-                        </tr>
-                      ))
-                    )}
+                    {barisHalamanIni.map(({ pos, item }) => (
+                      <tr
+                        key={`${pos.id}-${item.id}`}
+                        className="border-b border-slate-100"
+                      >
+                        <td className="p-3">{pos.nama}</td>
+                        <td className="p-3">
+                          {new Date(item.recorded_at).toLocaleString(
+                            "id-ID"
+                          )}
+                        </td>
+                        <td className="p-3">{item.nilai ?? "-"}</td>
+                        <td className="p-3">{item.satuan}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <p className="text-sm text-slate-500">
+                  Menampilkan {barisHalamanIni.length} dari {semuaBarisTabel.length} data
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setHalamanTabel((prev) => Math.max(1, prev - 1))}
+                    disabled={halamanTabel === 1}
+                    className="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
+                  >
+                    Sebelumnya
+                  </button>
+
+                  <span className="text-sm text-slate-600">
+                    Halaman {halamanTabel} dari {totalHalaman}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setHalamanTabel((prev) => Math.min(totalHalaman, prev + 1))
+                    }
+                    disabled={halamanTabel >= totalHalaman}
+                    className="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-40"
+                  >
+                    Berikutnya
+                  </button>
+                </div>
               </div>
             </section>
           </>
