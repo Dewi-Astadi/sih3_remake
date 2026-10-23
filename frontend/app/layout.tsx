@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/lib/auth-context";
 
 const publicSans = Public_Sans({
   subsets: ["latin"],
@@ -42,15 +43,17 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${publicSans.variable} font-sans h-full`}>
       <body className="flex min-h-screen flex-col bg-page text-ink antialiased">
-        <a href="#main-content" className="skip-link">
-          Lewati ke konten utama
-        </a>
-        <Navbar />
-        <main id="main-content" tabIndex={-1} className="flex-1">
-          {children}
-        </main>
-        <Footer />
-        <Toaster position="top-right" />
+        <AuthProvider>
+          <a href="#main-content" className="skip-link">
+            Lewati ke konten utama
+          </a>
+          <Navbar />
+          <main id="main-content" tabIndex={-1} className="flex-1">
+            {children}
+          </main>
+          <Footer />
+          <Toaster position="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );

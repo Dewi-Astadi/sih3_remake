@@ -151,4 +151,85 @@ class DokumenController extends Controller
             'Content-Length' => strlen($dummyContent),
         ]);
     }
+
+    /**
+     * Store new Dokumen
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'tahun' => 'required|integer',
+            'deskripsi' => 'nullable|string',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip|max:20480',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('dokumen', 'public');
+            $validated['file_path'] = 'storage/' . $path;
+            $validated['file_size'] = $file->getSize();
+            $validated['file_extension'] = $file->getClientOriginalExtension();
+        } else {
+            $validated['file_path'] = 'dokumen/placeholder.pdf';
+            $validated['file_size'] = 1024;
+            $validated['file_extension'] = 'pdf';
+        }
+
+        $validated['download_count'] = 0;
+        $dokumen = Dokumen::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen berhasil ditambahkan.',
+            'data' => $dokumen,
+        ], 201);
+    }
+
+    /**
+     * Update existing Dokumen
+     */
+    public function update(Request $request, int|string $id): JsonResponse
+    {
+        $dokumen = Dokumen::findOrFail($id);
+
+        $validated = $request->validate([
+            'judul' => 'sometimes|required|string|max:255',
+            'kategori' => 'sometimes|required|string|max:100',
+            'tahun' => 'sometimes|required|integer',
+            'deskripsi' => 'nullable|string',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip|max:20480',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('dokumen', 'public');
+            $validated['file_path'] = 'storage/' . $path;
+            $validated['file_size'] = $file->getSize();
+            $validated['file_extension'] = $file->getClientOriginalExtension();
+        }
+
+        $dokumen->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen berhasil diperbarui.',
+            'data' => $dokumen,
+        ]);
+    }
+
+    /**
+     * Delete Dokumen
+     */
+    public function destroy(int|string $id): JsonResponse
+    {
+        $dokumen = Dokumen::findOrFail($id);
+        $dokumen->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen berhasil dihapus.',
+        ]);
+    }
 }

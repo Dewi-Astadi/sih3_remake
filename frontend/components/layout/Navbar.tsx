@@ -4,9 +4,10 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, User, X } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
 
 interface NavLeaf {
   label: string;
@@ -59,6 +60,7 @@ function isActive(entry: NavEntry, pathname: string): boolean {
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
@@ -86,8 +88,6 @@ export function Navbar() {
     };
   }, [openGroup]);
 
-  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || "#";
-
   return (
     <header className="w-full">
       {/* Top identity strip */}
@@ -97,12 +97,22 @@ export function Navbar() {
             Situs resmi Balai Besar Wilayah Sungai Serayu Opak &middot; Direktorat
             Jenderal Sumber Daya Air &middot; Kementerian Pekerjaan Umum
           </span>
-          <a
-            href={adminUrl}
-            className="shrink-0 text-white font-medium hover:underline"
-          >
-            Masuk
-          </a>
+          {user ? (
+            <Link
+              href="/admin"
+              className="shrink-0 text-amber-400 font-semibold hover:underline flex items-center gap-1.5"
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Panel Admin ({user.name.split(" ")[0]})</span>
+            </Link>
+          ) : (
+            <Link
+              href="/admin/login"
+              className="shrink-0 text-white font-medium hover:underline flex items-center gap-1"
+            >
+              Masuk
+            </Link>
+          )}
         </Container>
       </div>
 
@@ -148,48 +158,49 @@ export function Navbar() {
                     key={entry.label}
                     href={entry.href}
                     className={cn(
-                      "px-3 py-2 text-[15px] font-medium transition-colors",
+                      "relative px-3 py-2 text-[15px] font-medium transition-colors",
                       active
-                        ? "text-[#14396A] shadow-[inset_0_-3px_0_#F2A900]"
+                        ? "text-[#14396A] font-semibold after:absolute after:bottom-[-18px] after:left-3 after:right-3 after:h-[3px] after:bg-[#F2A900] after:content-['']"
                         : "text-[#1B2430] hover:text-[#14396A]"
                     )}
-                    aria-current={active ? "page" : undefined}
                   >
                     {entry.label}
                   </Link>
                 );
               }
 
-              const open = openGroup === entry.label;
-              const active = isActive(entry, pathname);
+              const groupActive = isActive(entry, pathname);
+              const isOpen = openGroup === entry.label;
 
               return (
                 <div key={entry.label} className="relative">
                   <button
                     type="button"
-                    aria-expanded={open}
-                    aria-controls={`${menuId}-${entry.label}`}
-                    onClick={() => setOpenGroup(open ? null : entry.label)}
+                    onClick={() =>
+                      setOpenGroup((prev) => (prev === entry.label ? null : entry.label))
+                    }
+                    aria-expanded={isOpen}
+                    aria-haspopup="true"
                     className={cn(
                       "inline-flex items-center gap-1 px-3 py-2 text-[15px] font-medium transition-colors",
-                      active
-                        ? "text-[#14396A] shadow-[inset_0_-3px_0_#F2A900]"
+                      groupActive
+                        ? "text-[#14396A] font-semibold"
                         : "text-[#1B2430] hover:text-[#14396A]"
                     )}
                   >
-                    {entry.label}
+                    <span>{entry.label}</span>
                     <ChevronDown
                       aria-hidden="true"
                       className={cn(
-                        "h-3.5 w-3.5 transition-transform",
-                        open ? "rotate-180" : ""
+                        "h-4 w-4 transition-transform duration-150",
+                        isOpen && "rotate-180"
                       )}
                     />
                   </button>
 
-                  {open && (
+                  {isOpen && (
                     <ul
-                      id={`${menuId}-${entry.label}`}
+                      role="menu"
                       onClick={() => setOpenGroup(null)}
                       className="absolute left-0 top-full z-50 mt-1 min-w-[200px] rounded-[6px] border border-[#D5DBE3] bg-white py-1 shadow-md"
                     >
