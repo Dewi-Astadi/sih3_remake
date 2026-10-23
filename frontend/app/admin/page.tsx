@@ -12,14 +12,30 @@ import {
   ExternalLink,
   CheckCircle2,
   TrendingUp,
+  Droplets,
+  CloudRain,
+  Layers,
 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
+interface StatsState {
+  totalPos: number;
+  hidrologiPos: number;
+  hidrometeorologiPos: number;
+  hidrogeologiPos: number;
+  walidataCount: number;
+  dokumenCount: number;
+  pengukuranCount: number;
+}
+
 export default function AdminDashboardPage() {
   const { user, token } = useAuth();
-  const [stats, setStats] = useState({
-    posCount: 0,
+  const [stats, setStats] = useState<StatsState>({
+    totalPos: 0,
+    hidrologiPos: 0,
+    hidrometeorologiPos: 0,
+    hidrogeologiPos: 0,
     walidataCount: 0,
     dokumenCount: 0,
     pengukuranCount: 0,
@@ -30,10 +46,20 @@ export default function AdminDashboardPage() {
     async function fetchStats() {
       try {
         const [resPos, resWalidata, resDokumen] = await Promise.all([
-          axios.get(`${API_BASE_URL}/pos?per_page=1`),
+          axios.get(`${API_BASE_URL}/pos?per_page=100`),
           axios.get(`${API_BASE_URL}/walidata`),
-          axios.get(`${API_BASE_URL}/dokumen?per_page=1`),
+          axios.get(`${API_BASE_URL}/dokumen?per_page=100`),
         ]);
+
+        const allPos: Array<{ tipe?: string }> = resPos.data?.data || [];
+        const totalPos = resPos.data?.meta?.total ?? allPos.length;
+
+        const hidrologiPos = allPos.filter((p) => p.tipe === "hidrologi").length;
+        const hidrometeorologiPos = allPos.filter((p) => p.tipe === "hidrometeorologi").length;
+        const hidrogeologiPos = allPos.filter((p) => p.tipe === "hidrogeologi").length;
+
+        const walidataCount = resWalidata.data?.data?.length || 0;
+        const dokumenCount = resDokumen.data?.meta?.total ?? resDokumen.data?.data?.length ?? 0;
 
         let pengukuranTotal = 0;
         if (token) {
@@ -48,19 +74,16 @@ export default function AdminDashboardPage() {
         }
 
         setStats({
-          posCount: resPos.data?.total || resPos.data?.data?.length || 13,
-          walidataCount: resWalidata.data?.data?.length || 6,
-          dokumenCount: resDokumen.data?.total || resDokumen.data?.data?.length || 8,
+          totalPos,
+          hidrologiPos,
+          hidrometeorologiPos,
+          hidrogeologiPos,
+          walidataCount,
+          dokumenCount,
           pengukuranCount: pengukuranTotal,
         });
-      } catch {
-        // Fallback defaults
-        setStats({
-          posCount: 13,
-          walidataCount: 6,
-          dokumenCount: 8,
-          pengukuranCount: 1540,
-        });
+      } catch (err) {
+        console.error("Failed to load dashboard stats", err);
       } finally {
         setLoading(false);
       }
@@ -78,7 +101,7 @@ export default function AdminDashboardPage() {
             Selamat Datang, {user?.name || "Administrator"}!
           </h1>
           <p className="mt-1 text-sm text-gray-200">
-            Anda berada di Pusat Kendali Portal Satu Data Hidrologi, Hidrometeorologi, & Hidrogeologi BBWS Serayu Opak.
+            Pusat Kendali Portal Satu Data Hidrologi, Hidrometeorologi, & Hidrogeologi BBWS Serayu Opak.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -92,15 +115,16 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Metric Cards */}
+      {/* Main Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Pos Card */}
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
           <div>
             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Total Pos Pemantauan
             </div>
             <div className="text-2xl font-bold text-gray-900 mt-1">
-              {loading ? "..." : stats.posCount}
+              {loading ? "..." : stats.totalPos}
             </div>
             <Link
               href="/admin/pos"
@@ -114,6 +138,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Walidata Card */}
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
           <div>
             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -134,6 +159,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Dokumen Card */}
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
           <div>
             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -154,13 +180,14 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Sensor Measurements Card */}
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
           <div>
             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Rekaman Sensor
             </div>
             <div className="text-2xl font-bold text-gray-900 mt-1">
-              {loading ? "..." : (stats.pengukuranCount || "1,500+")}
+              {loading ? "..." : stats.pengukuranCount.toLocaleString("id-ID")}
             </div>
             <Link
               href="/admin/pengukuran"
@@ -171,6 +198,76 @@ export default function AdminDashboardPage() {
           </div>
           <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
             <Activity className="w-6 h-6" />
+          </div>
+        </div>
+      </div>
+
+      {/* Rincian Pos Sesuai Beranda (Hidrologi, Hidrometeorologi, Hidrogeologi) */}
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">
+              Rincian Pos Pemantauan per Bidang (Sinkron dengan Beranda)
+            </h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Distribusi stasiun data hidrologi, hidrometeorologi, dan hidrogeologi di database real-time.
+            </p>
+          </div>
+          <Link
+            href="/admin/pos"
+            className="text-xs text-[#14396A] font-semibold hover:underline"
+          >
+            Lihat Semua Pos &rarr;
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Hidrologi */}
+          <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4 flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900 uppercase tracking-wider">
+                <Droplets className="w-4 h-4 text-blue-600" />
+                <span>Hidrologi</span>
+              </div>
+              <div className="text-3xl font-bold text-blue-950 mt-1">
+                {loading ? "..." : stats.hidrologiPos}
+              </div>
+              <div className="text-xs text-blue-700/80 mt-1">
+                Pos Duga Air & Kualitas Air
+              </div>
+            </div>
+          </div>
+
+          {/* Hidrometeorologi */}
+          <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-4 flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase tracking-wider">
+                <CloudRain className="w-4 h-4 text-amber-600" />
+                <span>Hidrometeorologi</span>
+              </div>
+              <div className="text-3xl font-bold text-amber-950 mt-1">
+                {loading ? "..." : stats.hidrometeorologiPos}
+              </div>
+              <div className="text-xs text-amber-700/80 mt-1">
+                Pos Curah Hujan & Iklim
+              </div>
+            </div>
+          </div>
+
+          {/* Hidrogeologi */}
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-4 flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wider">
+                <Layers className="w-4 h-4 text-emerald-600" />
+                <span>Hidrogeologi</span>
+              </div>
+              <div className="text-3xl font-bold text-emerald-950 mt-1">
+                {loading ? "..." : stats.hidrogeologiPos}
+              </div>
+              <div className="text-xs text-emerald-700/80 mt-1">
+                Sumur Pantau Air Tanah
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -210,7 +307,7 @@ export default function AdminDashboardPage() {
             <span>Integritas Jaringan Walidata</span>
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Data SIH3 dikoordinasikan secara berkala bersama 6 instansi mitra (BBWS SO, BMKG DIY & Jateng, Pusdataru Jateng, DPUPESDM DIY, DLHK DIY, & PJT I). Pastikan nomor kontak WhatsApp & tautan layanan data instansi selalu mutakhir.
+            Data SIH3 dikoordinasikan secara berkala bersama mitra walidata (BBWS SO, BMKG DIY & Jateng, Pusdataru Jateng, DPUPESDM DIY, DLHK DIY, & PJT I). Pastikan kontak WhatsApp & tautan layanan data instansi selalu mutakhir.
           </p>
           <div className="pt-2">
             <Link
@@ -226,4 +323,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
