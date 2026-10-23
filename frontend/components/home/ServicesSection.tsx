@@ -36,7 +36,7 @@ export function ServicesSection() {
     <section className="pt-12 pb-6">
       <Container>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SERVICES.map((item) => {
+          {SERVICES.map((item, index) => {
             const cardContent = (
               <>
                 <div className="text-[16px] font-semibold text-[#1B2430]">
@@ -55,6 +55,8 @@ export function ServicesSection() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
+                  data-reveal
+                  style={{ "--reveal-delay": `${index * 70}ms` } as React.CSSProperties}
                   className="rounded-[8px] border border-[#D5DBE3] bg-white px-[18px] py-4 transition-all hover:border-[#AEB8C5] hover:shadow-[0_2px_10px_rgba(14,42,78,0.08)] block"
                 >
                   {cardContent}
@@ -66,6 +68,8 @@ export function ServicesSection() {
               <Link
                 key={item.title}
                 href={item.href}
+                data-reveal
+                style={{ "--reveal-delay": `${index * 70}ms` } as React.CSSProperties}
                 className="rounded-[8px] border border-[#D5DBE3] bg-white px-[18px] py-4 transition-all hover:border-[#AEB8C5] hover:shadow-[0_2px_10px_rgba(14,42,78,0.08)] block"
               >
                 {cardContent}

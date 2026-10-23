@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Download,
-  FileSpreadsheet,
-  FileText,
-  X,
-  CheckSquare,
-  Loader2,
-  Package,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FileText, X, CheckSquare, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { postBatchExport } from "@/lib/api";
 
@@ -92,21 +83,21 @@ export function BatchDownloadBar({
 
   return (
     <div
-      className="fixed bottom-5 inset-x-0 mx-auto z-40 max-w-2xl px-4 pointer-events-auto animate-in fade-in slide-in-from-bottom-5 duration-200"
+      className="pointer-events-auto fixed inset-x-0 bottom-5 z-40 mx-auto max-w-2xl px-4"
       role="region"
       aria-label="Aksi Batch Unduh Data Pos"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-slate-950/95 text-white shadow-2xl border border-slate-800 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-[#1F3A64] bg-[#0E2A4E] p-3 text-white">
         {/* Indikator Jumlah Terpilih */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
-            <CheckSquare className="w-4 h-4" />
-          </div>
+          <CheckSquare aria-hidden="true" className="h-4 w-4 shrink-0 text-[#F2A900]" />
           <div className="text-left">
-            <div className="text-sm font-bold text-white flex items-center gap-1.5">
-              <span>{selectedCount} Pos Terpilih</span>
+            <div className="text-[13px] font-semibold text-white">
+              {selectedCount} pos dipilih
             </div>
-            <div className="text-[11px] text-slate-400">Siap diekspor sekaligus</div>
+            <div className="text-[11px] text-[#C9D6E8]">
+              Unduh sebagai satu berkas
+            </div>
           </div>
         </div>
 
@@ -117,7 +108,7 @@ export function BatchDownloadBar({
             type="button"
             disabled={isDownloading}
             onClick={() => handleBatchDownload("xlsx")}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[6px] bg-[#F2A900] px-3 text-[12px] font-semibold text-[#0E2A4E] hover:bg-[#D99500] disabled:opacity-50"
             title="Unduh semua pos yang dipilih dalam format Excel (.xlsx)"
           >
             {isDownloading && activeFormat === "xlsx" ? (
@@ -133,7 +124,7 @@ export function BatchDownloadBar({
             type="button"
             disabled={isDownloading}
             onClick={() => handleBatchDownload("csv")}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-[#8FA6C4] bg-transparent px-3 text-[12px] font-semibold text-white hover:bg-white/10 disabled:opacity-50"
             title="Unduh semua pos yang dipilih dalam format CSV (.csv)"
           >
             {isDownloading && activeFormat === "csv" ? (
@@ -149,7 +140,7 @@ export function BatchDownloadBar({
             type="button"
             onClick={onClearSelection}
             disabled={isDownloading}
-            className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
+            className="inline-flex h-8 items-center gap-1 rounded-[6px] px-2 text-[12px] font-medium text-[#C9D6E8] hover:bg-white/10 hover:text-white"
             title="Batalkan pilihan semua pos"
           >
             <X className="w-3.5 h-3.5" />

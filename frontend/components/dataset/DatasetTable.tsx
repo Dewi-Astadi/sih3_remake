@@ -45,7 +45,10 @@ export function DatasetTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-[8px] border border-[#D5DBE3] bg-white">
+    <div
+      data-reveal
+      className="overflow-x-auto rounded-[8px] border border-[#D5DBE3] bg-white"
+    >
       <table className="w-full min-w-[880px] border-collapse text-[13px]">
         <caption className="sr-only">
           Daftar pos pemantauan beserta walidata, DAS, dan wilayah sungai

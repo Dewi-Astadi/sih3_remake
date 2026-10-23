@@ -3,18 +3,11 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import {
-  DownloadCloud,
-  ChevronRight,
-  Database,
-  Layers,
-  Sparkles,
-  Info,
-  CheckCircle2,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { DataExplorerFilter, FilterState } from "@/components/modules/DataExplorerFilter";
 import { DataExplorerTable } from "@/components/modules/DataExplorerTable";
 import { BatchDownloadBar } from "@/components/modules/BatchDownloadBar";
+import { DownloadDrawer } from "@/components/modules/DownloadDrawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPosList, getWalidataList } from "@/lib/api";
 import { Pos, Walidata } from "@/lib/types";
@@ -72,6 +65,9 @@ function DataExplorerContent() {
 
   // State checkbox baris yang terpilih untuk batch download
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  // Pos whose download panel is open, or null when it is closed.
+  const [downloadPos, setDownloadPos] = useState<Pos | null>(null);
 
   // Sinkronkan state URL query params setiap kali filter atau page berubah
   const updateUrlParams = useCallback(
@@ -176,60 +172,32 @@ function DataExplorerContent() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/70 pb-28">
+    <div className="min-h-screen pb-28">
       {/* 1. Header Halaman */}
-      <section className="bg-white border-b border-slate-200/90 pt-8 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb Navigasi */}
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-4">
-            <Link href="/" className="hover:text-slate-900 transition-colors">
+      <section className="border-b border-[#D5DBE3] bg-white pt-6 pb-7">
+        <div className="mx-auto w-full max-w-site px-4 sm:px-6">
+          <nav className="mb-4 flex items-center gap-1.5 text-[12px] font-medium text-[#5B6675]">
+            <Link href="/" className="hover:text-[#0B5CAD]">
               Beranda
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-900 font-semibold">Data Explorer</span>
+            <ChevronRight aria-hidden="true" className="h-3 w-3 text-[#AEB8C5]" />
+            <span className="text-[#1B2430]">Data Explorer</span>
           </nav>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 border border-amber-500/20 text-xs font-semibold mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                <span>Portal Satu Data SDA Terbuka</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 tracking-tight">
-                Pusat Unduh Data Terpadu SIH3
-              </h1>
-              <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-                Jelajahi seluruh jaringan pos pemantauan hidrologi, hidrometeorologi, dan
-                hidrogeologi di Wilayah Sungai Serayu Opak &amp; Serayu Bogowonto. Unduh dataset
-                terbuka dalam 1-klik atau batch sekaligus.
-              </p>
-            </div>
-
-            {/* Quick Helper Badge */}
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 shrink-0">
-              <DownloadCloud className="w-5 h-5 text-amber-600 shrink-0" />
-              <div>
-                <div className="font-bold text-slate-900">Format Terbuka</div>
-                <div>Excel (.xlsx) &amp; CSV Siap Olah</div>
-              </div>
-            </div>
-          </div>
+          <h1 className="text-[22px] font-semibold tracking-[-0.01em] text-[#1B2430] sm:text-[26px]">
+            Data Explorer
+          </h1>
+          <p className="mt-1 max-w-[620px] text-[13px] leading-relaxed text-[#5B6675]">
+            Seluruh pos pemantauan di Wilayah Sungai Serayu Opak dan Serayu
+            Bogowonto. Pilih periode lalu unduh dalam format CSV atau Excel.
+          </p>
         </div>
       </section>
 
-      {/* 2. Main Content: Filter, Info Strip & Data Table */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
-        {/* Banner Info Petunjuk Batch */}
-        <div className="flex items-center gap-3 p-3.5 rounded-xl bg-sky-50/70 border border-sky-200/80 text-xs text-sky-900">
-          <Info className="w-4 h-4 text-sky-600 shrink-0" />
-          <span>
-            <strong>Tips Pengunduhan:</strong> Anda dapat mengunduh data langsung per stasiun melalui
-            tombol <strong className="font-semibold">Unduh</strong> di kolom aksi, atau centang kotak
-            pada beberapa stasiun untuk mengunduh berkas batch secara simultan.
-          </span>
-        </div>
-
+      {/* 2. Main Content: Filter & Tabel */}
+      <main className="mx-auto w-full max-w-site px-4 pt-6 space-y-4 sm:px-6">
         {/* Komponen Filter Terpadu */}
+        <div data-reveal>
         <DataExplorerFilter
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
@@ -239,7 +207,10 @@ function DataExplorerContent() {
           isLoading={isLoading}
         />
 
-        {/* Komponen Tabel Data Explorer (TanStack Table + Shadcn UI) */}
+        </div>
+
+        {/* Komponen Tabel Data Explorer */}
+        <div data-reveal style={{ "--reveal-delay": "60ms" } as React.CSSProperties}>
         <DataExplorerTable
           data={posData}
           isLoading={isLoading}
@@ -255,8 +226,12 @@ function DataExplorerContent() {
           selectedIds={selectedIds}
           onSelectedIdsChange={setSelectedIds}
           onResetFilter={handleResetFilter}
+          onRequestDownload={setDownloadPos}
         />
+        </div>
       </main>
+
+      <DownloadDrawer pos={downloadPos} onClose={() => setDownloadPos(null)} />
 
       {/* 3. Floating Batch Download Bar (Muncul saat selectedIds.length > 0) */}
       <BatchDownloadBar

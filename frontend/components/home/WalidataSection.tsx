@@ -31,13 +31,15 @@ export function WalidataSection() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-          {FEATURED_WALIDATA.map((w) => (
+          {FEATURED_WALIDATA.map((w, index) => (
             <a
               key={w.shortName}
               href={w.href}
               target="_blank"
               rel="noreferrer"
               title={w.fullName}
+              data-reveal
+              style={{ "--reveal-delay": `${Math.min(index, 5) * 50}ms` } as React.CSSProperties}
               className="flex flex-col items-center justify-center rounded-[8px] border border-[#D5DBE3] bg-white p-4 text-center transition-all hover:border-[#AEB8C5] hover:shadow-[0_2px_10px_rgba(14,42,78,0.08)] block"
             >
               <div className="mb-2 h-11 w-11 rounded-[6px] border border-dashed border-[#8A96A6] flex items-center justify-center text-[10px] text-[#5B6675]">

@@ -158,7 +158,7 @@ export function MonitoringSection({ rows }: { rows: PosRow[] }) {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayedCards.map((row) => {
+          {displayedCards.map((row, index) => {
             const categoryTag = getCategoryTag(row);
             const paramLabel = getParamLabel(row);
             const hasStatus =
@@ -197,6 +197,8 @@ export function MonitoringSection({ rows }: { rows: PosRow[] }) {
             return (
               <article
                 key={row.id}
+                data-reveal
+                style={{ "--reveal-delay": `${Math.min(index, 5) * 70}ms` } as React.CSSProperties}
                 className="flex flex-col rounded-[8px] border border-[#D5DBE3] bg-white p-5 transition-shadow hover:shadow-[0_2px_10px_rgba(14,42,78,0.08)]"
               >
                 {/* Top: Jenis & Status */}

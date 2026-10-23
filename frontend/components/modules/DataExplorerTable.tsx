@@ -2,22 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
-import {
-  Download,
-  FileSpreadsheet,
-  FileText,
-  ExternalLink,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  SearchX,
-  Radio,
-  MapPin,
-  Building2,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
-} from "lucide-react";
+import { Download, ChevronLeft, ChevronRight, SearchX, MapPin } from "lucide-react";
 import {
   useLegacyTable as useTable,
   getCoreRowModel,
@@ -31,21 +16,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 import { Pos } from "@/lib/types";
-import { getExportUrl } from "@/lib/api";
+
+/** Extra per-column flags read by the renderer. */
+interface ColumnMeta {
+  /** Hidden below `lg`, where only the identifying and action columns fit. */
+  secondary?: boolean;
+  /** Hidden below `sm`; the row number adds nothing on a phone. */
+  narrow?: boolean;
+}
 
 export interface DataExplorerTableProps {
   data: Pos[];
@@ -59,6 +40,7 @@ export interface DataExplorerTableProps {
   selectedIds: number[];
   onSelectedIdsChange: (ids: number[]) => void;
   onResetFilter?: () => void;
+  onRequestDownload: (pos: Pos) => void;
 }
 
 export function DataExplorerTable({
@@ -73,22 +55,8 @@ export function DataExplorerTable({
   selectedIds,
   onSelectedIdsChange,
   onResetFilter,
+  onRequestDownload,
 }: DataExplorerTableProps) {
-  // Handler untuk download 1-klik
-  const handleDownload = (pos: Pos, format: "xlsx" | "csv") => {
-    toast.info(`Mengunduh data ${pos.nama} (${format.toUpperCase()})...`);
-    const downloadUrl = getExportUrl(pos.id, format);
-
-    // Memicu unduhan di browser
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.setAttribute("download", `${pos.kode_pos}_data.${format}`);
-    link.setAttribute("target", "_blank");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   // Definisi Kolom TanStack Table
   const columns = useMemo<ColumnDef<Pos>[]>(
     () => [
@@ -145,17 +113,6 @@ export function DataExplorerTable({
         },
       },
 
-      // 2. Kolom Nomor Urut
-      {
-        id: "no",
-        header: () => <div className="text-center w-8">No</div>,
-        cell: ({ row }) => (
-          <div className="text-center font-mono text-xs text-slate-500 w-8">
-            {(page - 1) * perPage + row.index + 1}
-          </div>
-        ),
-      },
-
       // 3. Kolom Nama Pos & Lokasi Administratif
       {
         id: "nama_lokasi",
@@ -167,33 +124,28 @@ export function DataExplorerTable({
             .join(", ");
 
           return (
-            <div className="space-y-1 min-w-[220px]">
-              <div className="flex items-center gap-2">
-                <Link
-                  href={`/pos/${pos.id}`}
-                  className="font-bold text-slate-900 hover:text-amber-600 transition-colors line-clamp-1 group flex items-center gap-1.5"
-                  title={pos.nama}
-                >
-                  <span>{pos.nama}</span>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                </Link>
-              </div>
+            <div className="min-w-0 max-w-[195px] space-y-1 lg:max-w-[260px]">
+              <Link
+                href={`/pos/${pos.id}`}
+                className="line-clamp-1 font-semibold text-[#0B5CAD] hover:text-[#14396A] hover:underline"
+                title={pos.nama}
+              >
+                {pos.nama}
+              </Link>
 
-              <div className="flex items-center gap-2 text-xs">
-                <span className="font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200/80">
-                  {pos.kode_pos}
-                </span>
+              <div className="flex min-w-0 items-center gap-2 text-[12px]">
+                <span className="font-mono text-[11px] text-[#5B6675]">{pos.kode_pos}</span>
                 {pos.sungai && (
-                  <span className="text-slate-500 truncate max-w-[140px]" title={pos.sungai}>
-                    • {pos.sungai}
+                  <span className="min-w-0 truncate text-[#5B6675]" title={pos.sungai}>
+                    &middot; {pos.sungai}
                   </span>
                 )}
               </div>
 
               {lokasiParts && (
-                <div className="flex items-center gap-1 text-[11px] text-slate-500 line-clamp-1" title={lokasiParts}>
-                  <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
-                  <span>{lokasiParts}</span>
+                <div className="flex min-w-0 items-center gap-1 text-[11px] text-[#5B6675]" title={lokasiParts}>
+                  <MapPin aria-hidden="true" className="h-3 w-3 shrink-0 text-[#AEB8C5]" />
+                  <span className="min-w-0 truncate">{lokasiParts}</span>
                 </div>
               )}
             </div>
@@ -205,57 +157,39 @@ export function DataExplorerTable({
       {
         id: "pilar_sensor",
         header: "Pilar & Sensor",
+        meta: { secondary: true },
         cell: ({ row }) => {
           const pos = row.original;
-          const tipe = (pos.tipe || "").toLowerCase();
-
-          // Pilar Badge Styling
-          let pilarBadgeColor = "bg-slate-100 text-slate-800 border-slate-200";
-          if (tipe === "hidrologi") {
-            pilarBadgeColor = "bg-sky-50 text-sky-800 border-sky-200";
-          } else if (tipe === "hidrometeorologi") {
-            pilarBadgeColor = "bg-blue-50 text-blue-800 border-blue-200";
-          } else if (tipe === "hidrogeologi") {
-            pilarBadgeColor = "bg-indigo-50 text-indigo-800 border-indigo-200";
-          }
-
           const latest = pos.latest_pengukuran;
           const statusSiaga = latest?.status_siaga || "normal";
 
-          let siagaBg = "text-emerald-700 bg-emerald-50 border-emerald-200";
-          if (statusSiaga === "waspada") {
-            siagaBg = "text-amber-700 bg-amber-50 border-amber-300";
-          } else if (statusSiaga === "siaga" || statusSiaga === "awas") {
-            siagaBg = "text-rose-700 bg-rose-50 border-rose-300";
-          }
+          // Only abnormal states are coloured; "normal" is the default and
+          // needs no decoration.
+          const siagaText =
+            statusSiaga === "waspada"
+              ? "text-[#6B4E00]"
+              : statusSiaga === "siaga" || statusSiaga === "awas"
+                ? "text-[#8B1A12]"
+                : "text-[#5B6675]";
 
           return (
-            <div className="space-y-1.5 min-w-[170px]">
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span
-                  className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold border ${pilarBadgeColor} capitalize`}
-                >
-                  {pos.tipe}
-                </span>
-                <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  {pos.jenis}
-                </span>
-              </div>
+            <div className="min-w-[170px] space-y-1">
+              <div className="text-[13px] text-[#1B2430]">{pos.jenis}</div>
 
-              {/* Data Pengukuran Terakhir */}
               {latest ? (
-                <div className="flex items-center gap-1.5 text-xs">
-                  <span className="font-bold text-slate-900 font-mono">
-                    {latest.nilai !== null ? Number(latest.nilai).toFixed(2) : "-"} {latest.satuan}
+                <div className="flex items-baseline gap-1.5">
+                  <span className="font-mono text-[13px] font-semibold tabular-nums text-[#14396A]">
+                    {latest.nilai !== null ? Number(latest.nilai).toFixed(2) : "—"}
                   </span>
-                  <span
-                    className={`px-1.5 py-0.2 rounded text-[10px] font-semibold border capitalize ${siagaBg}`}
-                  >
-                    {statusSiaga}
-                  </span>
+                  <span className="text-[11px] text-[#5B6675]">{latest.satuan}</span>
+                  {statusSiaga !== "normal" && (
+                    <span className={`text-[11px] font-medium capitalize ${siagaText}`}>
+                      {statusSiaga}
+                    </span>
+                  )}
                 </div>
               ) : (
-                <div className="text-[11px] text-slate-400 italic">Belum ada telemetri</div>
+                <div className="text-[11px] italic text-[#8A96A6]">Belum ada telemetri</div>
               )}
             </div>
           );
@@ -266,18 +200,19 @@ export function DataExplorerTable({
       {
         id: "das_ws",
         header: "DAS & Wilayah Sungai",
+        meta: { secondary: true },
         cell: ({ row }) => {
           const pos = row.original;
           return (
-            <div className="space-y-0.5 min-w-[150px]">
-              <div className="text-xs font-bold text-slate-800">{pos.das || "-"}</div>
+            <div className="min-w-[150px] space-y-0.5">
+              <div className="text-[13px] text-[#1B2430]">{pos.das || "—"}</div>
               {pos.sub_das && (
-                <div className="text-[11px] text-slate-500 line-clamp-1" title={pos.sub_das}>
-                  Sub: {pos.sub_das}
+                <div className="text-[11px] text-[#5B6675] line-clamp-1" title={pos.sub_das}>
+                  {pos.sub_das}
                 </div>
               )}
-              <div className="text-[11px] text-slate-500 line-clamp-1" title={pos.wilayah_sungai}>
-                {pos.wilayah_sungai || "WS Serayu Opak"}
+              <div className="text-[11px] text-[#5B6675] line-clamp-1" title={pos.wilayah_sungai}>
+                {pos.wilayah_sungai || "—"}
               </div>
             </div>
           );
@@ -288,18 +223,16 @@ export function DataExplorerTable({
       {
         id: "walidata",
         header: "Walidata Pengelola",
+        meta: { secondary: true },
         cell: ({ row }) => {
           const walidata = row.original.walidata;
           const singkatan = walidata?.singkatan || "SIH3";
           const namaLengkap = walidata?.nama || "Walidata Wilayah Sungai";
 
           return (
-            <div className="space-y-0.5 min-w-[140px]" title={namaLengkap}>
-              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200">
-                <Building2 className="w-3 h-3 text-slate-500 shrink-0" />
-                <span>{singkatan}</span>
-              </div>
-              <div className="text-[11px] text-slate-500 line-clamp-1">{namaLengkap}</div>
+            <div className="min-w-[140px] space-y-0.5" title={namaLengkap}>
+              <div className="text-[13px] font-medium text-[#1B2430]">{singkatan}</div>
+              <div className="text-[11px] text-[#5B6675] line-clamp-1">{namaLengkap}</div>
             </div>
           );
         },
@@ -309,26 +242,18 @@ export function DataExplorerTable({
       {
         id: "status_alat",
         header: "Status Alat",
+        meta: { secondary: true },
         cell: ({ row }) => {
           const status = (row.original.status_alat || "aktif").toLowerCase();
           const isAktif = status === "aktif";
 
           return (
-            <div className="min-w-[100px]">
-              <span
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${
-                  isAktif
-                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                    : "bg-rose-50 text-rose-800 border-rose-200"
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    isAktif ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
-                  }`}
-                />
-                <span className="capitalize">{status}</span>
-              </span>
+            <div className="min-w-[100px] text-[13px]">
+              {isAktif ? (
+                <span className="text-[#5B6675]">Aktif</span>
+              ) : (
+                <span className="font-medium capitalize text-[#8B1A12]">{status}</span>
+              )}
             </div>
           );
         },
@@ -337,70 +262,36 @@ export function DataExplorerTable({
       // 8. Kolom Aksi (Unduh 1-Klik & Tautan Detail)
       {
         id: "aksi",
-        header: () => <div className="text-right pr-2">Aksi</div>,
+        header: () => <div className="text-right sm:pr-1">Aksi</div>,
         cell: ({ row }) => {
           const pos = row.original;
           return (
-            <div className="flex items-center justify-end gap-1.5 pr-2">
-              {/* Dropdown Menu Unduh 1-Klik */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-2.5 bg-white hover:bg-slate-50 border-slate-300/90 text-slate-800 font-semibold text-xs shadow-xs flex items-center gap-1 cursor-pointer"
-                    title={`Unduh data ${pos.nama}`}
-                  >
-                    <Download className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Unduh</span>
-                    <ChevronDown className="w-3 h-3 text-slate-400" />
-                  </Button>
-                </DropdownMenuTrigger>
+            <div className="flex items-center justify-end gap-1.5 whitespace-nowrap sm:pr-1">
+              <button
+                type="button"
+                onClick={() => onRequestDownload(pos)}
+                className="inline-flex h-7 items-center gap-1 rounded-[6px] bg-[#14396A] px-2.5 text-[12px] font-semibold text-white hover:bg-[#0E2A4E]"
+                title={`Pilih periode dan unduh data ${pos.nama}`}
+              >
+                <Download aria-hidden="true" className="h-3 w-3" />
+                Unduh
+              </button>
 
-                <DropdownMenuContent align="end" className="w-48 shadow-xl">
-                  <DropdownMenuLabel className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                    Pilih Format Berkas
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem
-                    onClick={() => handleDownload(pos, "xlsx")}
-                    className="flex items-center gap-2 text-xs font-medium text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 cursor-pointer"
-                  >
-                    <FileSpreadsheet className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <div className="flex flex-col">
-                      <span className="font-semibold">Unduh Excel (.xlsx)</span>
-                      <span className="text-[10px] text-slate-400">Format tabel terformat</span>
-                    </div>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    onClick={() => handleDownload(pos, "csv")}
-                    className="flex items-center gap-2 text-xs font-medium text-slate-800 hover:text-sky-700 hover:bg-sky-50 cursor-pointer"
-                  >
-                    <FileText className="w-4 h-4 text-sky-600 shrink-0" />
-                    <div className="flex flex-col">
-                      <span className="font-semibold">Unduh CSV (.csv)</span>
-                      <span className="text-[10px] text-slate-400">Siap olah data science</span>
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Tautan Detail Pos */}
+              {/* The pos name is already a link to the same page; on a phone
+                  this button only pushes itself off-screen. */}
               <Link
                 href={`/pos/${pos.id}`}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                className="hidden h-7 items-center rounded-[6px] border border-[#AEB8C5] bg-white px-2.5 text-[12px] font-medium text-[#1B2430] hover:bg-[#F0F3F7] sm:inline-flex"
                 title={`Lihat detail dan grafik tren ${pos.nama}`}
               >
-                <ExternalLink className="w-4 h-4" />
+                Detail
               </Link>
             </div>
           );
         },
       },
     ],
-    [data, selectedIds, page, perPage, onSelectedIdsChange]
+    [data, selectedIds, onSelectedIdsChange, onRequestDownload]
   );
 
   // Inisialisasi TanStack Table
@@ -417,16 +308,22 @@ export function DataExplorerTable({
   return (
     <div className="space-y-4">
       {/* 1. Kontainer Tabel */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-[8px] border border-[#D5DBE3] bg-white">
         <div className="relative overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50/90 border-b border-slate-200">
+            <TableHeader className="border-b border-[#D5DBE3] bg-[#F5F7FA]">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="py-3 px-3 text-xs font-bold text-slate-700 uppercase tracking-wider"
+                      className={`px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-[#5B6675] ${
+                        (header.column.columnDef.meta as ColumnMeta | undefined)?.secondary
+                          ? "hidden lg:table-cell"
+                          : (header.column.columnDef.meta as ColumnMeta | undefined)?.narrow
+                            ? "hidden sm:table-cell"
+                            : ""
+                      }`}
                     >
                       {header.isPlaceholder
                         ? null
@@ -443,12 +340,9 @@ export function DataExplorerTable({
               {/* State 1: Skeleton Loader saat fetching data */}
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, rIdx) => (
-                  <TableRow key={rIdx} className="border-b border-slate-100">
+                  <TableRow key={rIdx} className="border-b border-[#E4E8EE]">
                     <TableCell className="p-3 text-center">
                       <Skeleton className="h-4 w-4 mx-auto rounded" />
-                    </TableCell>
-                    <TableCell className="p-3 text-center">
-                      <Skeleton className="h-4 w-6 mx-auto rounded" />
                     </TableCell>
                     <TableCell className="p-3 space-y-2">
                       <Skeleton className="h-4 w-44 rounded" />
@@ -482,14 +376,21 @@ export function DataExplorerTable({
                     <TableRow
                       key={row.id}
                       data-state={isSelected ? "selected" : undefined}
-                      className={`border-b border-slate-100 transition-colors ${
-                        isSelected
-                          ? "bg-amber-50/60 hover:bg-amber-100/50"
-                          : "hover:bg-slate-50/80"
+                      className={`border-b border-[#E4E8EE] transition-colors last:border-b-0 ${
+                        isSelected ? "bg-[#FEF6D8]" : "hover:bg-[#FAFBFC]"
                       }`}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="py-3 px-3 align-middle">
+                        <TableCell
+                          key={cell.id}
+                          className={`px-2 py-3 align-middle sm:px-3 ${
+                            (cell.column.columnDef.meta as ColumnMeta | undefined)?.secondary
+                              ? "hidden lg:table-cell"
+                              : (cell.column.columnDef.meta as ColumnMeta | undefined)?.narrow
+                                ? "hidden sm:table-cell"
+                                : ""
+                          }`}
+                        >
                           {typeof cell.column.columnDef.cell === "function"
                             ? cell.column.columnDef.cell(cell.getContext())
                             : (cell.getValue() as React.ReactNode)}
@@ -503,27 +404,23 @@ export function DataExplorerTable({
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-64 text-center p-8">
                     <div className="max-w-md mx-auto flex flex-col items-center justify-center space-y-3">
-                      <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
-                        <SearchX className="w-7 h-7" />
-                      </div>
+                      <SearchX aria-hidden="true" className="h-7 w-7 text-[#AEB8C5]" />
                       <div className="space-y-1">
-                        <h3 className="text-base font-bold text-slate-900">
-                          Data Pos Tidak Ditemukan
+                        <h3 className="text-[15px] font-semibold text-[#1B2430]">
+                          Tidak ada pos yang cocok
                         </h3>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                          Tidak ada pos pemantauan yang cocok dengan filter atau kata kunci yang Anda
-                          masukkan.
+                        <p className="text-[13px] leading-relaxed text-[#5B6675]">
+                          Coba ubah kata kunci atau hapus sebagian filter.
                         </p>
                       </div>
                       {onResetFilter && (
-                        <Button
-                          variant="outline"
-                          size="sm"
+                        <button
+                          type="button"
                           onClick={onResetFilter}
-                          className="mt-2 text-xs font-semibold rounded-xl border-slate-300"
+                          className="mt-1 inline-flex h-8 items-center rounded-[6px] border border-[#AEB8C5] bg-white px-3 text-[12px] font-medium text-[#1B2430] hover:bg-[#F0F3F7]"
                         >
-                          Reset Semua Filter
-                        </Button>
+                          Reset filter
+                        </button>
                       )}
                     </div>
                   </TableCell>
@@ -535,22 +432,23 @@ export function DataExplorerTable({
       </div>
 
       {/* 2. Paginasi & Total Data Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         {/* Info Total dan Range Baris */}
-        <div className="flex items-center gap-3 text-xs text-slate-600">
+        <div className="flex items-center gap-3 text-[13px] text-[#5B6675]">
           <span>
-            Menampilkan <strong className="text-slate-900 font-bold">{from}</strong> -{" "}
-            <strong className="text-slate-900 font-bold">{to}</strong> dari{" "}
-            <strong className="text-slate-900 font-bold">{total}</strong> total stasiun
+            Menampilkan{" "}
+            <strong className="font-semibold text-[#1B2430]">{from}</strong>–
+            <strong className="font-semibold text-[#1B2430]">{to}</strong> dari{" "}
+            <strong className="font-semibold text-[#1B2430]">{total}</strong> pos
           </span>
 
           {onPerPageChange && (
-            <div className="flex items-center gap-1.5 ml-2 pl-3 border-l border-slate-200">
-              <span className="text-slate-500">Per halaman:</span>
+            <div className="flex items-center gap-1.5 border-l border-[#E4E8EE] pl-3">
+              <span>Per halaman</span>
               <select
                 value={perPage}
                 onChange={(e) => onPerPageChange(Number(e.target.value))}
-                className="py-1 px-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-800 bg-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-slate-900"
+                className="h-7 rounded-[6px] border border-[#AEB8C5] bg-white px-1.5 text-[12px] text-[#1B2430] focus:border-[#0B5CAD] focus:outline-none"
                 aria-label="Pilih jumlah data per halaman"
               >
                 {[10, 15, 25, 50].map((size) => (
@@ -564,32 +462,30 @@ export function DataExplorerTable({
         </div>
 
         {/* Tombol Paginasi (Prev / Next & Page indicator) */}
-        <div className="flex items-center gap-1.5 self-end sm:self-auto">
-          <Button
-            variant="outline"
-            size="sm"
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
             onClick={() => onPageChange(Math.max(1, page - 1))}
             disabled={page <= 1 || isLoading}
-            className="h-8 px-2.5 text-xs font-semibold rounded-lg border-slate-300 disabled:opacity-40 cursor-pointer"
+            className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#AEB8C5] bg-white px-2.5 text-[12px] font-medium text-[#1B2430] hover:bg-[#F0F3F7] disabled:opacity-40"
           >
-            <ChevronLeft className="w-3.5 h-3.5 mr-1" />
-            <span>Sebelumnya</span>
-          </Button>
+            <ChevronLeft aria-hidden="true" className="h-3 w-3" />
+            Sebelumnya
+          </button>
 
-          <div className="px-3 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-800">
+          <span className="text-[12px] text-[#5B6675]">
             Halaman {page} dari {Math.max(1, lastPage)}
-          </div>
+          </span>
 
-          <Button
-            variant="outline"
-            size="sm"
+          <button
+            type="button"
             onClick={() => onPageChange(Math.min(lastPage, page + 1))}
             disabled={page >= lastPage || isLoading}
-            className="h-8 px-2.5 text-xs font-semibold rounded-lg border-slate-300 disabled:opacity-40 cursor-pointer"
+            className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#AEB8C5] bg-white px-2.5 text-[12px] font-medium text-[#1B2430] hover:bg-[#F0F3F7] disabled:opacity-40"
           >
-            <span>Berikutnya</span>
-            <ChevronRight className="w-3.5 h-3.5 ml-1" />
-          </Button>
+            Berikutnya
+            <ChevronRight aria-hidden="true" className="h-3 w-3" />
+          </button>
         </div>
       </div>
     </div>

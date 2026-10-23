@@ -477,7 +477,7 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
             <span className="text-xs text-slate-400">Prinsip Satu Data Terbuka</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div data-reveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Kartu 1: Lokasi Administratif */}
             <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm space-y-3 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider">
@@ -682,7 +682,7 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
         {/* ================================================================= */}
         {/* SEKSI GRAFIK TREN PENGUKURAN (STATIONTRENDCHART) */}
         {/* ================================================================= */}
-        <section>
+        <section data-reveal>
           <StationTrendChart
             pos={pos}
             data={timeseriesData}
@@ -697,6 +697,7 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
         {/* ================================================================= */}
         <section
           id="riwayat"
+          data-reveal
           className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden scroll-mt-24"
         >
           {/* Header Tabel Riwayat */}
