@@ -46,9 +46,9 @@ const NAV_ITEMS: NavEntry[] = [
   label: "Galeri",
     items: [
       { label: "Buletin", href: `${ORIGINAL_SITE}/info/buletin`, external: true },
-      { label: "Peta", href: `${ORIGINAL_SITE}/info/galeripeta`, external: true },
+      { label: "Peta", href: "/galeri/peta" },
       { label: "Album Kegiatan", href: `${ORIGINAL_SITE}/info/album`, external: true },
-      { label: "Dokumen", href: "/publikasi" },
+      { label: "Dokumen", href: "/galeri/dokumen" },
     ],
   },
 ];
