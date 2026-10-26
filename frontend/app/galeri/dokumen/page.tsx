@@ -38,54 +38,65 @@ export default function GaleriDokumenPage() {
   const dokumen = data.dokumen as Dokumen[];
 
   const hasil = useMemo(() => {
-    const keyword = pencarian.toLowerCase().trim();
+  const keyword = pencarian.toLowerCase().trim();
 
-    return dokumen.filter((item) => {
-      const nomorKategori = item.nomor.split(".")[0];
+  return dokumen.filter((item) => {
+    const nomorKategori = item.nomor.split(".")[0];
 
-      const sesuaiKategori =
-        kategoriAktif === "Semua" ||
-        nomorKategori === kategoriAktif;
+    const sesuaiKategori =
+      kategoriAktif === "Semua" ||
+      nomorKategori === kategoriAktif;
 
-      const sesuaiPencarian =
-        !keyword ||
-        item.judul.toLowerCase().includes(keyword) ||
-        item.nomor.toLowerCase().includes(keyword) ||
-        item.pencarian.toLowerCase().includes(keyword);
+    const sesuaiPencarian =
+      !keyword ||
+      item.judul.toLowerCase().includes(keyword) ||
+      item.nomor.toLowerCase().includes(keyword) ||
+      item.pencarian.toLowerCase().includes(keyword);
 
-      return sesuaiKategori && sesuaiPencarian;
-    });
-  }, [dokumen, pencarian, kategoriAktif]);
+    return sesuaiKategori && sesuaiPencarian;
+  });
+}, [dokumen, pencarian, kategoriAktif]);
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20">
-      <section className="bg-gradient-to-r from-sky-800 to-cyan-700 px-6 py-14 text-white">
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-3 text-sm text-cyan-100">
-            Beranda / Galeri / Dokumen
-          </p>
-          <h1 className="text-3xl font-bold md:text-4xl">
-            Galeri Dokumen
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm text-cyan-50 md:text-base">
-            Kumpulan dokumen dan publikasi resmi
-            BBWS Serayu Opak yang dapat dilihat
-            maupun diunduh.
-          </p>
-        </div>
-      </section>
+    <main className="min-h-screen bg-slate-50 pb-20"> 
+    <section
+      className="relative flex min-h-[370px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-16 text-center text-white"
+      style={{
+        
+backgroundImage:
+  "linear-gradient(rgba(8, 22, 40, 0.68), rgba(8, 22, 40, 0.68)), url('/images/hero-bendungan.jpg')",
+
+      }}
+    >
+      <div className="relative z-10 mx-auto max-w-4xl">
+        <p className="mb-3 text-sm font-bold uppercase tracking-[0.16em] text-amber-400">
+          PORTAL SIH3
+        </p>
+
+        <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+          Publikasi Dokumen
+        </h1>
+
+        <div className="mx-auto mt-5 h-1 w-10 bg-yellow-400" />
+
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-200 md:text-lg">
+          Peraturan, prosedur, dan dokumen pengelolaan hidrologi
+          Wilayah Sungai Serayu Opak.
+        </p>
+      </div>
+    </section>
+
 
       <section className="mx-auto max-w-6xl px-5 pt-10">
         <div className="mb-7 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row">
+            
             <input
               type="search"
               value={pencarian}
-              onChange={(event) =>
-                setPencarian(event.target.value)
-              }
+              onChange={(event) => setPencarian(event.target.value)}
               placeholder="Cari judul dokumen..."
-              className="w-full flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none focus:border-sky-600"
+              className="w-full flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800"
             />
 
             <select
