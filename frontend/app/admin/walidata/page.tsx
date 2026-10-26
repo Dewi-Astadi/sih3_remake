@@ -138,7 +138,7 @@ export default function AdminWalidataPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
             <Building2 className="w-6 h-6 text-[#14396A]" />
-            <span>Direktori Mitra Walidata</span>
+            <span>Mitra Walidata</span>
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Kelola profil instansi mitra kerja sama penyedia data hidrologi, kontak darurat, dan portal layanan data.

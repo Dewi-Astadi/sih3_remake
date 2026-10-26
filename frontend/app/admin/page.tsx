@@ -207,10 +207,10 @@ export default function AdminDashboardPage() {
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
           <div>
             <h2 className="text-base font-bold text-gray-900">
-              Rincian Pos Pemantauan per Bidang (Sinkron dengan Beranda)
+              Pos Pemantauan
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              Distribusi stasiun data hidrologi, hidrometeorologi, dan hidrogeologi di database real-time.
+              Stasiun data hidrologi, hidrometeorologi, dan hidrogeologi.
             </p>
           </div>
           <Link
@@ -276,7 +276,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
           <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-amber-500" />
+            
             <span>Panduan Operasional Cepat</span>
           </h2>
           <ul className="space-y-3 text-sm text-gray-600">
@@ -303,7 +303,7 @@ export default function AdminDashboardPage() {
 
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
           <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-blue-600" />
+            
             <span>Integritas Jaringan Walidata</span>
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed">
