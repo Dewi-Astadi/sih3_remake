@@ -38,7 +38,7 @@ class PengukuranSeeder extends Seeder
             while ($currentDate->lessThanOrEqualTo($endDate)) {
                 $step++;
                 $hour = $currentDate->hour;
-                $dayIndex = $currentDate->diffInDays($startDate);
+                $dayIndex = (int) $startDate->diffInDays($currentDate);
 
                 $record = [
                     'pos_id' => $pos->id,
