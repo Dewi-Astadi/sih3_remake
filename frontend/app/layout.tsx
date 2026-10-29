@@ -51,15 +51,7 @@ export default function RootLayout({
       className={`${publicSans.variable} font-sans h-full`}
       suppressHydrationWarning
     >
-      <head>
-        {/* Marks the document as JS-capable before paint, so reveal styles only
-            hide content when the observer can actually reveal it. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: 'document.documentElement.classList.add("js")',
-          }}
-        />
-      </head>
+      <head />
       <body className="flex min-h-screen flex-col bg-page text-ink antialiased">
         <a href="#main-content" className="skip-link">
           Lewati ke konten utama
