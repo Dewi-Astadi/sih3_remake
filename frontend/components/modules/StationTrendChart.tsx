@@ -15,7 +15,6 @@ import {
 } from "recharts";
 import {
   Activity,
-  TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
   Calendar,
@@ -263,14 +262,9 @@ export function StationTrendChart({
       {/* 1. Header Kontrol: Judul & Preset Rentang Waktu */}
       <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-slate-900 text-amber-400">
-              <TrendingUp className="w-4 h-4" />
-            </span>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-              Visualisasi Tren Pengukuran Deret Waktu
-            </h2>
-          </div>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Visualisasi Tren Pengukuran Deret Waktu
+          </h2>
           <p className="text-xs sm:text-sm text-slate-500">
             {isRainfall
               ? "Histogram intensitas curah hujan per pencatatan waktu pemantauan"

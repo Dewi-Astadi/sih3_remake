@@ -23,42 +23,38 @@ import {
   AlertTriangle,
   Radio,
   Calendar,
-  Layers,
   ChevronLeft,
 } from "lucide-react";
+import { Container } from "@/components/layout/Container";
 import { toast } from "sonner";
 import { FALLBACK_WALIDATA, getExportUrl, getPosDetail, getPosTimeseries } from "@/lib/api";
 import { Pengukuran, Pos, StatusAlat, StatusSiaga, Walidata } from "@/lib/types";
 import { StationTrendChart, TimeRangePreset } from "@/components/modules/StationTrendChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-
 interface PosDetailClientProps {
   id: string;
 }
 
-// Format status alat
+// Format status alat (Opsi 1: Subtle Tinted Tag tanpa dot)
 function formatStatusAlat(status?: StatusAlat) {
   const s = (status || "aktif").toLowerCase();
   switch (s) {
     case "rusak":
       return {
-        label: "Rusak",
-        className: "bg-rose-50 text-rose-700 border-rose-200",
-        dotClassName: "bg-rose-500",
+        label: "Nonaktif",
+        className: "bg-rose-50 text-rose-700",
       };
     case "perbaikan":
       return {
-        label: "Dalam Perbaikan",
-        className: "bg-amber-50 text-amber-700 border-amber-200",
-        dotClassName: "bg-amber-500",
+        label: "Perbaikan",
+        className: "bg-amber-50 text-amber-800",
       };
     case "aktif":
     default:
       return {
-        label: "Aktif Beroperasi",
-        className: "bg-emerald-50 text-emerald-800 border-emerald-200",
-        dotClassName: "bg-emerald-500 animate-pulse",
+        label: "Aktif",
+        className: "bg-emerald-50 text-emerald-800",
       };
   }
 }
@@ -86,34 +82,30 @@ function formatTipeBadge(tipe?: string) {
   }
 }
 
-// Format status siaga pada tabel riwayat
+// Format status siaga pada tabel riwayat (tanpa dot)
 function formatStatusSiagaBadge(status?: StatusSiaga) {
   const s = (status || "normal").toLowerCase();
   switch (s) {
     case "awas":
       return {
         label: "Awas",
-        className: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
-        dot: "bg-rose-600",
+        className: "bg-rose-100 text-rose-800 font-bold",
       };
     case "siaga":
       return {
         label: "Siaga",
-        className: "bg-orange-100 text-orange-800 border-orange-300 font-bold",
-        dot: "bg-orange-600",
+        className: "bg-orange-100 text-orange-800 font-bold",
       };
     case "waspada":
       return {
         label: "Waspada",
-        className: "bg-amber-100 text-amber-900 border-amber-300 font-bold",
-        dot: "bg-amber-500",
+        className: "bg-amber-100 text-amber-900 font-bold",
       };
     case "normal":
     default:
       return {
         label: "Normal",
-        className: "bg-emerald-50 text-emerald-700 border-emerald-200 font-medium",
-        dot: "bg-emerald-500",
+        className: "bg-emerald-50 text-emerald-800 font-medium",
       };
   }
 }
@@ -362,8 +354,8 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
   return (
     <div className="min-h-screen bg-slate-50/70 pb-28">
       {/* 1. Header Stasiun Pos */}
-      <section className="bg-white border-b border-slate-200/90 pt-8 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-white border-b border-hairline pt-8 pb-10">
+        <Container>
           {/* Breadcrumbs Navigasi */}
           <nav
             aria-label="Breadcrumb"
@@ -374,10 +366,10 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <Link
-              href="/data-explorer"
-              className="hover:text-slate-900 transition-colors"
+              href="/pos"
+              className="hover:text-primary transition-colors hover:underline"
             >
-              Eksplorasi Data
+              Status Pos Pemantauan
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="text-slate-950 font-bold truncate max-w-xs sm:max-w-md">
@@ -407,10 +399,10 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
                 </span>
 
                 {/* Badge Status Alat */}
+                {/* Badge Status Alat (Opsi 1: Subtle Tinted Tag tanpa dot) */}
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusAlat.className}`}
+                  className={`inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold ${statusAlat.className}`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${statusAlat.dotClassName}`} />
                   {statusAlat.label}
                 </span>
               </div>
@@ -460,18 +452,18 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
               </Button>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* 2. Main Content Grid */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+      <main className="pt-8 space-y-8">
+        <Container className="space-y-8">
         {/* ================================================================= */}
         {/* KARTU INFORMASI METADATA STASIUN (4 KARTU GRID) */}
         {/* ================================================================= */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-slate-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Metadata &amp; Parameter Pos Pemantauan
             </h2>
             <span className="text-xs text-slate-400">Prinsip Satu Data Terbuka</span>
@@ -479,13 +471,10 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
 
           <div data-reveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Kartu 1: Lokasi Administratif */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider">
-                <span className="p-1.5 rounded-lg bg-amber-50 border border-amber-100">
-                  <MapPin className="w-4 h-4 text-amber-600" />
-                </span>
-                <span>Lokasi Administratif</span>
-              </div>
+            <div className="bg-white rounded-xl border border-hairline p-5 shadow-xs space-y-3 hover:shadow-sm transition-shadow">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">
+                Lokasi Administratif
+              </h3>
               <div className="space-y-2 text-xs text-slate-700 divide-y divide-slate-100">
                 <div className="flex justify-between pt-1">
                   <span className="text-slate-400">Desa/Kelurahan:</span>
@@ -515,13 +504,10 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
             </div>
 
             {/* Kartu 2: Lokasi Hidrologis */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-2 text-sky-600 font-bold text-xs uppercase tracking-wider">
-                <span className="p-1.5 rounded-lg bg-sky-50 border border-sky-100">
-                  <Waves className="w-4 h-4 text-sky-600" />
-                </span>
-                <span>Lokasi Hidrologis</span>
-              </div>
+            <div className="bg-white rounded-xl border border-hairline p-5 shadow-xs space-y-3 hover:shadow-sm transition-shadow">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">
+                Lokasi Hidrologis
+              </h3>
               <div className="space-y-2 text-xs text-slate-700 divide-y divide-slate-100">
                 <div className="flex justify-between pt-1">
                   <span className="text-slate-400">Wilayah Sungai:</span>
@@ -551,16 +537,13 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
             </div>
 
             {/* Kartu 3: Koordinat Geodetik (Bebas Peta) */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm space-y-3 hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-hairline p-5 shadow-xs space-y-3 hover:shadow-sm transition-shadow flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">
-                    <span className="p-1.5 rounded-lg bg-indigo-50 border border-indigo-100">
-                      <Navigation className="w-4 h-4 text-indigo-600" />
-                    </span>
-                    <span>Koordinat Geodetik</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">
+                    Koordinat Geodetik
+                  </h3>
+                  <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                     WGS84
                   </span>
                 </div>
@@ -618,17 +601,14 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
             </div>
 
             {/* Kartu 4: Instansi Walidata Penanggung Jawab */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm space-y-3 hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-hairline p-5 shadow-xs space-y-3 hover:shadow-sm transition-shadow flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase tracking-wider">
-                    <span className="p-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
-                      <Building2 className="w-4 h-4 text-emerald-700" />
-                    </span>
-                    <span>Instansi Walidata</span>
-                  </div>
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">
+                    Instansi Walidata
+                  </h3>
                   {walidata?.singkatan && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
                       {walidata.singkatan}
                     </span>
                   )}
@@ -703,14 +683,9 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
           {/* Header Tabel Riwayat */}
           <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-slate-900 text-white">
-                  <Clock className="w-4 h-4 text-amber-400" />
-                </span>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                  Tabel Riwayat Rekaman Data Deret Waktu
-                </h3>
-              </div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                Tabel Riwayat Rekaman Data Deret Waktu
+              </h3>
               <p className="text-xs sm:text-sm text-slate-500">
                 Daftar rekaman kronologis untuk stasiun {pos.nama} periode {selectedRange}.
               </p>
@@ -812,9 +787,8 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
                         </td>
                         <td className="py-3 px-4">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] border ${statusSiaga.className}`}
+                            className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold ${statusSiaga.className}`}
                           >
-                            <span className={`w-1.5 h-1.5 rounded-full ${statusSiaga.dot}`} />
                             {statusSiaga.label}
                           </span>
                         </td>
@@ -898,6 +872,7 @@ export default function PosDetailClient({ id }: PosDetailClientProps) {
             </div>
           </div>
         </section>
+        </Container>
       </main>
     </div>
   );
