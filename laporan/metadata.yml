@@ -1,0 +1,37 @@
+---
+title: "Evaluasi Antarmuka dan Pengalaman Pengguna (UI/UX) pada Hasil Redesain Website SIH3 BBWS Serayu Opak"
+subtitle: "LAPORAN MAGANG PROFESIONAL"
+author:
+  - name: "Abdullah As Syafi'i"
+    nim: "230101113"
+lecturer: "Bapak/Ibu Dosen Pembimbing"
+lecturer_label: "Dosen Pembimbing:"
+course: "Disusun untuk Melengkapi Persyaratan Skripsi pada Program Studi S-1 Sistem Informasi"
+institution: "Universitas Duta Bangsa Surakarta"
+faculty: "Fakultas Ilmu Komputer"
+department: "Sistem Informasi"
+city: "Surakarta"
+year: "2026"
+date: "Oktober 2026"
+cover_show_lecturer: false
+cover_logo_width: "4cm"
+daftar_gambar: true
+daftar_tabel: true
+approval:
+  city: "Surakarta"
+  date: "Oktober 2026"
+  supervisors:
+    - name: "[Nama Pembimbing I], S.Kom., M.Kom."
+      nip: "[NIDN/NIP]"
+      role: "Pembimbing I"
+    - name: "[Nama Pembimbing II], S.Kom., M.Kom."
+      nip: "[NIDN/NIP]"
+      role: "Pembimbing II"
+  dean:
+    name: "[Nama Ketua Program Studi], S.Kom., M.Kom."
+    nip: "[NIDN/NIP]"
+    role: "Ketua Program Studi Sistem Informasi"
+heading_sub_dot: false
+heading_subsub_dot: false
+preset: "skripsi-4433"
+...

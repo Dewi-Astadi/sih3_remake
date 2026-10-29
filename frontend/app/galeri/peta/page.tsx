@@ -403,11 +403,34 @@ export default function GaleriPetaPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 pb-16">
-      <header className="bg-slate-900 px-4 py-16 text-center text-white sm:py-20">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">Portal SIH3</p>
-        <h1 className="mt-3 text-3xl font-bold sm:text-4xl">Galeri Peta</h1>
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-300">Peta hidrologi, analisa curah hujan, dan cekungan air tanah Wilayah Sungai Serayu Opak.</p>
+      
+      <header
+        className="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-16 text-center text-white sm:min-h-[350px]"
+        style={{
+          backgroundImage:
+            
+"linear-gradient(rgba(8, 22, 40, 0.68), rgba(8, 22, 40, 0.68)), url('/images/hero-bendungan.jpg')",
+
+        }}
+      >
+        <div className="relative z-10 mx-auto max-w-4xl">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
+            PORTAL SIH3
+          </p>
+
+          <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
+            Galeri Peta
+          </h1>
+
+          <div className="mx-auto mt-5 h-1 w-10 bg-yellow-400" />
+
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
+            Peta hidrologi, analisa curah hujan, dan cekungan air tanah
+            Wilayah Sungai Serayu Opak.
+          </p>
+        </div>
       </header>
+
 
       <section className="mx-auto max-w-7xl px-4 pt-12 sm:px-6 lg:px-8">
         <p className="mb-2 text-xs font-bold uppercase tracking-widest text-teal-700">Galeri Peta</p>
