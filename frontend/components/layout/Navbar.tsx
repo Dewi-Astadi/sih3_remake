@@ -10,9 +10,10 @@ import React, {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, User, X } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
 
 interface NavLeaf {
   label: string;
@@ -72,6 +73,7 @@ const INDICATOR_BASE_WIDTH = 100;
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
@@ -144,8 +146,6 @@ export function Navbar() {
     };
   }, [openGroup]);
 
-  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || "#";
-
   return (
     <header className="w-full">
       {/* Top identity strip */}
@@ -155,12 +155,22 @@ export function Navbar() {
             Situs resmi Balai Besar Wilayah Sungai Serayu Opak &middot; Direktorat
             Jenderal Sumber Daya Air &middot; Kementerian Pekerjaan Umum
           </span>
-          <a
-            href={adminUrl}
-            className="shrink-0 text-white font-medium hover:underline"
-          >
-            Masuk
-          </a>
+          {user ? (
+            <Link
+              href="/admin"
+              className="shrink-0 text-amber-400 font-semibold hover:underline flex items-center gap-1.5"
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Panel Admin ({user.name.split(" ")[0]})</span>
+            </Link>
+          ) : (
+            <Link
+              href="/admin/login"
+              className="shrink-0 text-white font-medium hover:underline flex items-center gap-1"
+            >
+              Masuk
+            </Link>
+          )}
         </Container>
       </div>
 
@@ -207,12 +217,11 @@ export function Navbar() {
                     href={entry.href}
                     data-nav-key={entry.label}
                     className={cn(
-                      "px-3 py-2 text-[15px] font-medium transition-colors",
+                      "relative px-3 py-2 text-[15px] font-medium transition-colors",
                       active
                         ? "text-[#14396A]"
                         : "text-[#1B2430] hover:text-[#14396A]"
                     )}
-                    aria-current={active ? "page" : undefined}
                   >
                     {entry.label}
                   </Link>
@@ -237,12 +246,12 @@ export function Navbar() {
                         : "text-[#1B2430] hover:text-[#14396A]"
                     )}
                   >
-                    {entry.label}
+                    <span>{entry.label}</span>
                     <ChevronDown
                       aria-hidden="true"
                       className={cn(
-                        "h-3.5 w-3.5 transition-transform",
-                        open ? "rotate-180" : ""
+                        "h-4 w-4 transition-transform duration-150",
+                        open && "rotate-180"
                       )}
                     />
                   </button>

@@ -64,4 +64,72 @@ class WalidataController extends Controller
             'data' => $walidata,
         ]);
     }
+
+    /**
+     * Store new Walidata
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'singkatan' => 'required|string|max:50',
+            'deskripsi' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'telepon' => 'nullable|string|max:50',
+            'whatsapp' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:100',
+            'website' => 'nullable|url|max:255',
+            'url_layanan_data' => 'nullable|url|max:255',
+        ]);
+
+        $walidata = Walidata::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data walidata berhasil ditambahkan.',
+            'data' => $walidata,
+        ], 201);
+    }
+
+    /**
+     * Update existing Walidata
+     */
+    public function update(Request $request, int|string $id): JsonResponse
+    {
+        $walidata = Walidata::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama' => 'sometimes|required|string|max:255',
+            'singkatan' => 'sometimes|required|string|max:50',
+            'deskripsi' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'telepon' => 'nullable|string|max:50',
+            'whatsapp' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:100',
+            'website' => 'nullable|url|max:255',
+            'url_layanan_data' => 'nullable|url|max:255',
+        ]);
+
+        $walidata->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data walidata berhasil diperbarui.',
+            'data' => $walidata,
+        ]);
+    }
+
+    /**
+     * Delete Walidata
+     */
+    public function destroy(int|string $id): JsonResponse
+    {
+        $walidata = Walidata::findOrFail($id);
+        $walidata->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data walidata berhasil dihapus.',
+        ]);
+    }
 }

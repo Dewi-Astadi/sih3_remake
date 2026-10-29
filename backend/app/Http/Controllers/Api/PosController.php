@@ -166,4 +166,102 @@ class PosController extends Controller
             'data' => $measurements,
         ]);
     }
+
+    /**
+     * Store new Pos
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'kode_pos' => 'required|string|max:100|unique:pos,kode_pos',
+            'tipe' => 'required|in:hidrologi,hidrometeorologi,hidrogeologi',
+            'jenis' => 'required|string|max:100',
+            'sungai' => 'nullable|string|max:255',
+            'das' => 'nullable|string|max:255',
+            'sub_das' => 'nullable|string|max:255',
+            'desa' => 'nullable|string|max:255',
+            'kecamatan' => 'nullable|string|max:255',
+            'kabupaten' => 'nullable|string|max:255',
+            'provinsi' => 'nullable|string|max:255',
+            'wilayah_sungai' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'elevasi' => 'nullable|numeric',
+            'tahun_pembangunan' => 'nullable|integer',
+            'status_alat' => 'nullable|string|in:aktif,rusak,perbaikan',
+            'walidata_id' => 'nullable|exists:walidata,id',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        if (empty($validated['wilayah_sungai'])) {
+            $validated['wilayah_sungai'] = 'WS Progo-Opak-Serang';
+        }
+        if (empty($validated['das'])) {
+            $validated['das'] = 'DAS Progo';
+        }
+        if (empty($validated['walidata_id'])) {
+            $validated['walidata_id'] = \App\Models\Walidata::value('id') ?? 1;
+        }
+
+        $pos = Pos::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pos pemantauan berhasil ditambahkan.',
+            'data' => $pos,
+        ], 201);
+    }
+
+    /**
+     * Update existing Pos
+     */
+    public function update(Request $request, int|string $id): JsonResponse
+    {
+        $pos = Pos::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama' => 'sometimes|required|string|max:255',
+            'kode_pos' => 'sometimes|required|string|max:100|unique:pos,kode_pos,'.$pos->id,
+            'tipe' => 'sometimes|required|in:hidrologi,hidrometeorologi,hidrogeologi',
+            'jenis' => 'sometimes|required|string|max:100',
+            'sungai' => 'nullable|string|max:255',
+            'das' => 'nullable|string|max:255',
+            'sub_das' => 'nullable|string|max:255',
+            'desa' => 'nullable|string|max:255',
+            'kecamatan' => 'nullable|string|max:255',
+            'kabupaten' => 'nullable|string|max:255',
+            'provinsi' => 'nullable|string|max:255',
+            'wilayah_sungai' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'elevasi' => 'nullable|numeric',
+            'tahun_pembangunan' => 'nullable|integer',
+            'status_alat' => 'nullable|string|in:aktif,rusak,perbaikan',
+            'walidata_id' => 'nullable|exists:walidata,id',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $pos->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pos pemantauan berhasil diperbarui.',
+            'data' => $pos,
+        ]);
+    }
+
+    /**
+     * Delete Pos
+     */
+    public function destroy(int|string $id): JsonResponse
+    {
+        $pos = Pos::findOrFail($id);
+        $pos->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pos pemantauan berhasil dihapus.',
+        ]);
+    }
 }
