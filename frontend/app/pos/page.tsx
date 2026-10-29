@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { 
   Activity, 
   Search, 
@@ -46,15 +47,19 @@ function renderStatusBadge(status?: StatusAlat) {
   }
 }
 
-export default function PemantauanPosPage() {
+function PemantauanPosContent() {
+  const searchParams = useSearchParams();
+  const queryFromUrl = searchParams.get("q") || "";
+
   const [posList, setPosList] = useState<Pos[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  // Menggunakan queryFromUrl langsung sebagai nilai awal state
+  const [searchQuery, setSearchQuery] = useState(queryFromUrl);
 
   useEffect(() => {
     getPosList()
       .then((res: unknown) => {
-        // Menangani respon berupa PaginatedResponse (res.data) atau Array biasa
+        // Menangani respon berupa PaginatedResponse (res.data/res.items) atau Array biasa
         const dataRes = res as { data?: Pos[]; items?: Pos[] } | Pos[];
         if (Array.isArray(dataRes)) {
           setPosList(dataRes);
@@ -70,13 +75,15 @@ export default function PemantauanPosPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Filter pencarian berdasarkan nama pos, kode, atau kabupaten
+  // Filter pencarian berdasarkan nama pos, kode pos, kabupaten, atau tipe/jenis
   const filteredPos = posList.filter((pos) => {
     const query = searchQuery.toLowerCase();
     return (
       pos.nama?.toLowerCase().includes(query) ||
       pos.kode_pos?.toLowerCase().includes(query) ||
-      pos.kabupaten?.toLowerCase().includes(query)
+      pos.kabupaten?.toLowerCase().includes(query) ||
+      pos.tipe?.toLowerCase().includes(query) ||
+      pos.jenis?.toLowerCase().includes(query)
     );
   });
 
@@ -187,5 +194,13 @@ export default function PemantauanPosPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function PemantauanPosPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-500">Memuat halaman pos...</div>}>
+      <PemantauanPosContent />
+    </Suspense>
   );
 }

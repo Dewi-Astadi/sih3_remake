@@ -27,14 +27,13 @@ interface NavGroup {
 
 type NavEntry = NavLeaf | NavGroup;
 
-const ORIGINAL_SITE = "https://sih3.bbwsserayuopak.id";
-
 const NAV_ITEMS: NavEntry[] = [
   { label: "Beranda", href: "/" },
   { label: "FloodRouting", href: "/floodrouting" },
   {
     label: "SIH3",
     items: [
+      { label: "Status Pos Pemantauan", href: "/pos" },
       { label: "Hidrologi", href: "/hidrologi" },
       { label: "Hidrometeorologi", href: "/hidrometeorologi" },
       { label: "Hidrogeologi", href: "/hidrogeologi" },
@@ -44,9 +43,9 @@ const NAV_ITEMS: NavEntry[] = [
   {
     label: "Galeri",
     items: [
-      { label: "Buletin", href: `${ORIGINAL_SITE}/info/buletin`, external: true },
+      { label: "Buletin", href: "/galeri/buletin" },
       { label: "Peta", href: "/galeri/peta" },
-      { label: "Album Kegiatan", href: `${ORIGINAL_SITE}/info/album`, external: true },
+      { label: "Album Kegiatan", href: "/galeri/album" },
       { label: "Dokumen", href: "/galeri/dokumen" },
     ],
   },
@@ -247,11 +246,6 @@ export function Navbar() {
                     />
                   </button>
 
-                  {/*
-                    Kept mounted so the panel can animate both ways: `visibility`
-                    transitions discretely, so links stay untabbable while closed
-                    and the exit fade still plays.
-                  */}
                   <ul
                     id={`${menuId}-${entry.label}`}
                     aria-hidden={!open}
@@ -298,11 +292,7 @@ export function Navbar() {
               Unduh Data
             </Link>
 
-            {/*
-              One bar for the whole nav: it is positioned from the active item's
-              measured box and slides between items. Width is the base width
-              scaled to the target, so a label change animates too.
-            */}
+            {/* Indicator Slider Bar */}
             <span
               aria-hidden="true"
               className={cn(
@@ -361,13 +351,24 @@ export function Navbar() {
                       <ul className="mt-1 space-y-1 pl-2">
                         {entry.items.map((item) => (
                           <li key={item.label}>
-                            <Link
-                              href={item.href}
-                              onClick={() => setMobileOpen(false)}
-                              className="block py-1.5 px-2 text-[14px] text-[#1B2430] hover:text-[#14396A]"
-                            >
-                              {item.label}
-                            </Link>
+                            {item.external ? (
+                              <a
+                                href={item.href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="block py-1.5 px-2 text-[14px] text-[#1B2430] hover:text-[#14396A]"
+                              >
+                                {item.label}
+                              </a>
+                            ) : (
+                              <Link
+                                href={item.href}
+                                onClick={() => setMobileOpen(false)}
+                                className="block py-1.5 px-2 text-[14px] text-[#1B2430] hover:text-[#14396A]"
+                              >
+                                {item.label}
+                              </Link>
+                            )}
                           </li>
                         ))}
                       </ul>
