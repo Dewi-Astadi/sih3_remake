@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -168,6 +167,32 @@ const barisHalamanIni = semuaBarisTabel.slice(
 ];
 
 const satuanBerbeda = daftarSatuan.length > 1;
+
+// Grafik memakai dua sumbu Y hanya jika tepat ada dua satuan berbeda.
+// Jika satuan lebih dari dua, grafik tetap memakai satu sumbu dan peringatan.
+const bisaDuaSumbu = daftarSatuan.length === 2;
+
+// Satuan tiap pos, diambil dari data pengukuran valid pertama milik pos tersebut.
+const satuanPerPos: Record<string, string> = {};
+dataPerPos.forEach(({ pos, pengukuran }) => {
+  const dataBersatuan = pengukuran.find(
+    (item) =>
+      typeof item.nilai === "number" &&
+      Number.isFinite(item.nilai) &&
+      Boolean(item.satuan?.trim())
+  );
+
+  satuanPerPos[String(pos.id)] = dataBersatuan?.satuan?.trim() ?? "";
+});
+
+// Satuan pertama ada di sumbu kiri, satuan kedua ada di sumbu kanan.
+function sumbuUntukPos(posId: number) {
+  if (bisaDuaSumbu && satuanPerPos[String(posId)] === daftarSatuan[1]) {
+    return "kanan";
+  }
+
+  return "kiri";
+}
 
   const statistik = dataPerPos.map(({ pos, pengukuran }) => {
     const nilaiValid = pengukuran
@@ -411,14 +436,15 @@ const dataGrafik = Object.values(
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
   <h2 className="mb-4 text-lg font-semibold">
     Grafik Perbandingan Pengukuran
-    {satuanBerbeda && (
-  <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
-    Perhatian: Data memiliki satuan pengukuran berbeda
-    ({daftarSatuan.join(", ")}). Perbandingan langsung
-    antarpos perlu ditafsirkan dengan hati-hati.
-  </p>
-)}
   </h2>
+
+  {satuanBerbeda && (
+    <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+      {bisaDuaSumbu
+        ? `Perhatian: Data memiliki dua satuan pengukuran berbeda. Sumbu kiri menunjukkan satuan ${daftarSatuan[0]} dan sumbu kanan menunjukkan satuan ${daftarSatuan[1]}, sehingga skala kedua garis tidak dapat dibandingkan langsung.`
+        : `Perhatian: Data memiliki satuan pengukuran berbeda (${daftarSatuan.join(", ")}). Grafik memakai satu sumbu, sehingga perbandingan langsung antarpos perlu ditafsirkan dengan hati-hati.`}
+    </p>
+  )}
 
   {dataGrafik.length > 0 ? (
     <div className="h-80 w-full">
@@ -431,16 +457,46 @@ const dataGrafik = Object.values(
               new Date(value).toLocaleDateString("id-ID")
             }
           />
-          <YAxis />
+          <YAxis
+            yAxisId="kiri"
+            orientation="left"
+            width={70}
+            label={
+              bisaDuaSumbu
+                ? {
+                    value: daftarSatuan[0],
+                    angle: -90,
+                    position: "insideLeft",
+                  }
+                : undefined
+            }
+          />
+          {bisaDuaSumbu && (
+            <YAxis
+              yAxisId="kanan"
+              orientation="right"
+              width={70}
+              label={{
+                value: daftarSatuan[1],
+                angle: 90,
+                position: "insideRight",
+              }}
+            />
+          )}
           <Tooltip />
           <Legend />
 
           {dataPerPos.map(({ pos }, index) => (
             <Line
               key={pos.id}
+              yAxisId={sumbuUntukPos(pos.id)}
               type="monotone"
               dataKey={String(pos.id)}
-              name={pos.nama}
+              name={
+                bisaDuaSumbu && satuanPerPos[String(pos.id)]
+                  ? `${pos.nama} (${satuanPerPos[String(pos.id)]})`
+                  : pos.nama
+              }
               stroke={
                 ["#2563eb", "#dc2626", "#16a34a", "#9333ea"][
                   index % 4
